@@ -20,7 +20,7 @@ The user is a working software engineer in Chennai (IST) upskilling toward AI en
 | P2 | Data layer, Capture, Today | done | `26a6078` | Opus 5.5 (used) |
 | P3 | Review flow | done | `2872ae8` | Opus 5.5 (used) |
 | P4 | Notifications | done (not yet run on a device) | `5d17047` | Fable 5.2 (used) |
-| P5 | Focus mode and ambient sound | done (sound and screen lock not yet tried on a phone) | `HASH` | Fable 5.2 (used) |
+| P5 | Focus mode and ambient sound | done (sound and screen lock not yet tried on a phone) | `719b607` | Fable 5.2 (used) |
 | P6 | Progress, tracks and weekly goals, export and import | next | | Sonnet 5.5 |
 | P7 | Polish, accessibility pass, Android build | | | Opus 5.5 |
 
