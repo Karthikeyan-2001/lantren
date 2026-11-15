@@ -4,7 +4,18 @@ import { localDate } from '../scheduler';
 
 import { newId } from './ids';
 import type { Review, Topic } from './types';
-import { countWord, dayMarkLabel, flameFor, lanternFlames, relativeDay, shortDate } from './view';
+import {
+  countWord,
+  dayMarkLabel,
+  flameFor,
+  lanternFlames,
+  nextForTopic,
+  nextWaiting,
+  outcomeCopy,
+  relativeDay,
+  shortDate,
+  whenWords,
+} from './view';
 
 const today = localDate('2026-11-15');
 
@@ -81,4 +92,62 @@ test('ids are distinct v4-shaped uuids', () => {
   const ids = new Set(Array.from({ length: 200 }, newId));
   expect(ids.size).toBe(200);
   for (const id of ids) expect(id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+});
+
+describe('after a review', () => {
+  test('when words', () => {
+    expect(whenWords(localDate('2026-11-15'), today)).toBe('today');
+    expect(whenWords(localDate('2026-11-16'), today)).toBe('tomorrow');
+    expect(whenWords(localDate('2026-11-18'), today)).toBe('on Wed 18 Nov');
+  });
+
+  test('the next waiting review is the oldest undone one due by today, skipping archived topics', () => {
+    const other: Topic = { ...topic('archived'), id: 't2' };
+    const reviews = [
+      review(4, '2026-11-15'),
+      { ...review(7, '2026-11-13'), id: 'old' },
+      { ...review(4, '2026-11-10'), id: 'archived', topicId: 't2' },
+      { ...review(4, '2026-11-11'), id: 'done', doneAt: '2026-11-11T10:00:00Z' },
+      { ...review(7, '2026-11-16'), id: 'ahead' },
+    ];
+    expect(nextWaiting(reviews, [topic(), other], today)?.id).toBe('old');
+    expect(nextWaiting(reviews, [topic(), other], today, 'old')?.id).toBe('r-4');
+    expect(nextWaiting(reviews, [topic(), other], today, 'r-4')?.id).toBe('old');
+    expect(nextForTopic(reviews, 't1')?.id).toBe('old');
+  });
+
+  const base = { dayMark: 4 as const, justLockedIn: false, added: [], next: undefined };
+  test('solid and fuzzy say when it comes back', () => {
+    const next = review(7, '2026-11-18');
+    expect(outcomeCopy({ ...base, recall: 'solid', next }, today)).toEqual({
+      title: 'Lit',
+      body: 'It comes back on Wed 18 Nov, day 7.',
+    });
+    expect(outcomeCopy({ ...base, recall: 'fuzzy', next }, today).title).toBe('Lit, a little hazy');
+    expect(outcomeCopy({ ...base, dayMark: 7, recall: 'fuzzy' }, today).body).toMatch(/Nothing more is set/);
+  });
+
+  test('forgot is leaky, never a failure, and names the extra day', () => {
+    const copy = outcomeCopy({ ...base, recall: 'forgot', added: [review('extra', '2026-11-16')] }, today);
+    expect(copy.title).toBe('A little leaky');
+    expect(copy.body).toContain('tomorrow');
+    expect(copy.body).not.toMatch(/fail|wrong|missed/i);
+  });
+
+  test('locking in mentions graduation visits only when they were added', () => {
+    expect(outcomeCopy({ ...base, dayMark: 7, recall: 'solid', justLockedIn: true }, today).body).toMatch(
+      /will not ask/,
+    );
+    const added = [review(14, '2026-11-25'), review(30, '2026-12-11')];
+    expect(outcomeCopy({ ...base, dayMark: 7, recall: 'solid', justLockedIn: true, added }, today).body).toContain(
+      'on Wed 25 Nov and on Fri 11 Dec',
+    );
+  });
+
+  test('a graduation review says it is still glowing', () => {
+    expect(outcomeCopy({ ...base, dayMark: 30, recall: 'solid' }, today)).toEqual({
+      title: 'Still glowing',
+      body: 'That was its last visit. It is yours.',
+    });
+  });
 });

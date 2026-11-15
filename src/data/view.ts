@@ -1,5 +1,5 @@
 /** Small pure helpers that turn stored data into what the screens show. */
-import { CORE_DAY_MARKS, daysBetween, type LocalDate } from '../scheduler';
+import { CORE_DAY_MARKS, GRADUATION_DAY_MARKS, daysBetween, type LocalDate, type Recall } from '../scheduler';
 import type { FlameState } from '../ui/Flame';
 
 import type { Review, Topic, TopicKind, Track } from './types';
@@ -73,4 +73,82 @@ const WORDS = ['Nothing', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven',
 /** "One", "Two" ... "Ten", then digits. */
 export function countWord(n: number): string {
   return WORDS[n] ?? String(n);
+}
+
+/** "today", "tomorrow", or "on Thu 19 Nov": for sentences about what comes next. */
+export function whenWords(date: LocalDate, today: LocalDate): string {
+  const ahead = daysBetween(today, date);
+  if (ahead === 0) return 'today';
+  if (ahead === 1) return 'tomorrow';
+  return `on ${shortDate(date)}`;
+}
+
+/**
+ * The next review to offer after one is finished: due today or waiting, oldest first,
+ * never one from an archived topic.
+ */
+export function nextWaiting(
+  reviews: readonly Review[],
+  topics: readonly Topic[],
+  today: LocalDate,
+  excludeId?: string,
+): Review | undefined {
+  const live = new Set(topics.filter((t) => t.status !== 'archived').map((t) => t.id));
+  return reviews
+    .filter((r) => r.id !== excludeId && !r.doneAt && r.dueOn <= today && live.has(r.topicId))
+    .sort((a, b) => a.dueOn.localeCompare(b.dueOn))[0];
+}
+
+/** The topic's next undone review, soonest first. */
+export function nextForTopic(reviews: readonly Review[], topicId: string): Review | undefined {
+  return reviews.filter((r) => r.topicId === topicId && !r.doneAt).sort((a, b) => a.dueOn.localeCompare(b.dueOn))[0];
+}
+
+export interface OutcomeInput {
+  recall: Recall;
+  /** The review that was just rated. */
+  dayMark: Review['dayMark'];
+  justLockedIn: boolean;
+  /** Reviews the rating added (an extra, or graduation reviews). */
+  added: readonly Review[];
+  /** The topic's next undone review after the rating, if any. */
+  next: Review | undefined;
+}
+
+/** What the review screen says once a rating is saved. Kind, short, never a score. */
+export function outcomeCopy(o: OutcomeInput, today: LocalDate): { title: string; body: string } {
+  if (o.justLockedIn) {
+    const [first, second] = o.added;
+    return {
+      title: 'Locked in',
+      body:
+        first && second
+          ? `This one is yours now. It will drop by ${whenWords(first.dueOn, today)} and ${whenWords(second.dueOn, today)}, just to say hello.`
+          : 'This one is yours now. It will not ask for you again.',
+    };
+  }
+  if (o.recall === 'forgot') {
+    const extra = o.added[0];
+    return {
+      title: 'A little leaky',
+      body: extra
+        ? `That happens. Let us look again ${whenWords(extra.dueOn, today)}; a second look is how it sticks.`
+        : 'That happens. It will keep its place, and you can come back to it soon.',
+    };
+  }
+  const next = o.next;
+  const comesBack = next ? `It comes back ${whenWords(next.dueOn, today)}, ${dayMarkLabel(next)}.` : undefined;
+  if (typeof o.dayMark === 'number' && GRADUATION_DAY_MARKS.includes(o.dayMark)) {
+    return {
+      title: 'Still glowing',
+      body: next ? `Good to see it again. ${comesBack}` : 'That was its last visit. It is yours.',
+    };
+  }
+  if (o.recall === 'fuzzy') {
+    return {
+      title: 'Lit, a little hazy',
+      body: comesBack ?? 'Nothing more is set for it. Capture it again whenever you want another round.',
+    };
+  }
+  return { title: 'Lit', body: comesBack ?? 'Nicely done.' };
 }

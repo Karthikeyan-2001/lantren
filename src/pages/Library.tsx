@@ -86,7 +86,10 @@ export function LibraryPage() {
         </section>
       )}
 
-      <Link to="/styleguide" className="ln-btn ln-btn--quiet ln-btn--block">
+      <Link to="/settings" className="ln-btn ln-btn--quiet ln-btn--block">
+        Settings
+      </Link>
+      <Link to="/styleguide" className="ln-btn ln-btn--ghost ln-btn--block">
         Open the style guide
       </Link>
     </Screen>

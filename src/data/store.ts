@@ -1,15 +1,12 @@
 import { create } from 'zustand';
 
+import { toLocalDate, type Recall } from '../scheduler';
+
 import { db as defaultDb, type LanternDB } from './db';
-import { loadAll, saveTopic } from './repo';
+import { loadAll, recordReview, saveTopic, snoozeReviewById, updateSettings, type ReviewOutcome } from './repo';
 import { DEFAULT_SETTINGS } from './seed';
 import type { Review, Settings, Topic, TopicInput, Track } from './types';
-
-export interface LastCapture {
-  topicId: string;
-  title: string;
-  dueDates: Review['dueOn'][];
-}
+import { whenWords } from './view';
 
 interface LanternState {
   status: 'loading' | 'ready' | 'error';
@@ -17,22 +14,28 @@ interface LanternState {
   topics: Topic[];
   reviews: Review[];
   settings: Settings;
-  /** Shown once on Today after a capture. Memory only. */
-  lastCapture: LastCapture | null;
+  /** One quiet line shown on Today after a capture or a snooze. Memory only. */
+  notice: string | null;
   load: () => Promise<void>;
   capture: (input: TopicInput) => Promise<Topic>;
-  dismissLastCapture: () => void;
+  review: (reviewId: string, recall: Recall) => Promise<ReviewOutcome>;
+  snooze: (reviewId: string) => Promise<Review>;
+  updateSettings: (patch: Partial<Omit<Settings, 'id'>>) => Promise<void>;
+  dismissNotice: () => void;
 }
+
+const replaceById = <T extends { id: string }>(list: readonly T[], item: T): T[] =>
+  list.map((x) => (x.id === item.id ? item : x));
 
 /** The app's in-memory view of the database. Writes go to Dexie first, then here. */
 export function createLanternStore(db: LanternDB) {
-  return create<LanternState>()((set) => ({
+  return create<LanternState>()((set, get) => ({
     status: 'loading',
     tracks: [],
     topics: [],
     reviews: [],
     settings: DEFAULT_SETTINGS,
-    lastCapture: null,
+    notice: null,
 
     load: async () => {
       try {
@@ -50,12 +53,45 @@ export function createLanternStore(db: LanternDB) {
         topics: [...s.topics, topic],
         reviews: [...s.reviews, ...reviews],
         settings: { ...s.settings, lastTrackId: topic.trackId },
-        lastCapture: { topicId: topic.id, title: topic.title, dueDates: reviews.map((r) => r.dueOn) },
+        notice: `“${topic.title}” is lit. Back ${reviews.map((r) => whenWords(r.dueOn, toLocalDate(new Date()))).join(' and ')}.`,
       }));
       return topic;
     },
 
-    dismissLastCapture: () => set({ lastCapture: null }),
+    review: async (reviewId, recall) => {
+      const outcome = await recordReview(db, reviewId, recall, new Date());
+      set((s) => ({
+        topics: replaceById(s.topics, outcome.topic),
+        reviews: [...replaceById(s.reviews, outcome.review), ...outcome.added],
+      }));
+      return outcome;
+    },
+
+    snooze: async (reviewId) => {
+      const moved = await snoozeReviewById(db, reviewId, new Date());
+      set((s) => {
+        const title = s.topics.find((t) => t.id === moved.topicId)?.title;
+        return {
+          reviews: replaceById(s.reviews, moved),
+          notice: title ? `“${title}” will be back ${whenWords(moved.dueOn, toLocalDate(new Date()))}.` : s.notice,
+        };
+      });
+      return moved;
+    },
+
+    // Optimistic, so a switch moves the moment it is tapped; put back if the write fails.
+    updateSettings: async (patch) => {
+      const before = get().settings;
+      set({ settings: { ...before, ...patch } });
+      try {
+        set({ settings: await updateSettings(db, patch) });
+      } catch (error) {
+        set({ settings: before });
+        throw error;
+      }
+    },
+
+    dismissNotice: () => set({ notice: null }),
   }));
 }
 

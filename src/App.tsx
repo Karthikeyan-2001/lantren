@@ -7,6 +7,8 @@ import { useLantern } from './data/store';
 import { CapturePage } from './pages/Capture';
 import { LibraryPage } from './pages/Library';
 import { FocusPage } from './pages/Placeholders';
+import { ReviewPage } from './pages/Review';
+import { SettingsPage } from './pages/Settings';
 import { StyleGuidePage } from './pages/StyleGuide';
 import { TodayPage } from './pages/Today';
 import { Nav } from './ui/Nav';
@@ -49,6 +51,8 @@ const App: React.FC = () => {
           <Route path="/focus" element={<FocusPage />} />
           <Route path="/library" element={<LibraryPage />} />
           <Route path="/capture" element={<CapturePage />} />
+          <Route path="/review/:reviewId" element={<ReviewPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="/styleguide" element={<StyleGuidePage />} />
           <Route path="/" element={<Navigate to="/today" replace />} />
         </IonRouterOutlet>

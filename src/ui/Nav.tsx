@@ -47,14 +47,18 @@ export function Nav() {
             to={d.to}
             replace
             className="ln-nav__link"
-            aria-current={pathname.startsWith(d.to) ? 'page' : undefined}
+            aria-current={
+              pathname.startsWith(d.to) || (d.to === '/library' && pathname.startsWith('/settings'))
+                ? 'page'
+                : undefined
+            }
           >
             {d.icon}
             {d.label}
           </Link>
         ))}
       </nav>
-      {!pathname.startsWith('/capture') && (
+      {!pathname.startsWith('/capture') && !pathname.startsWith('/review') && (
         <Link to="/capture" className="ln-fab" aria-label="Capture what you studied">
           {icon(<path d="M12 5v14M5 12h14" strokeWidth="2" />)}
         </Link>

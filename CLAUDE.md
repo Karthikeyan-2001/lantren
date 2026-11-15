@@ -18,8 +18,8 @@ The user is a working software engineer in Chennai (IST) upskilling toward AI en
 | P0 | Project setup, design tokens, style-guide page | done | `5e16fcf` | Fable 5.2 (used) |
 | P1 | Scheduler module and tests | done | `f4d93da` | Fable 5.2 (used) |
 | P2 | Data layer, Capture, Today | done | `26a6078` | Opus 5.5 (used) |
-| P3 | Review flow | next | | Opus 5.5 |
-| P4 | Notifications | | | Fable 5.2 |
+| P3 | Review flow | done | | Opus 5.5 (used) |
+| P4 | Notifications | next | | Fable 5.2 |
 | P5 | Focus mode and ambient sound | | | Fable 5.2 |
 | P6 | Progress, tracks and weekly goals, export and import | | | Sonnet 5.5 |
 | P7 | Polish, accessibility pass, Android build | | | Opus 5.5 |
@@ -73,7 +73,7 @@ Why each phase gets its model:
 5. Today screen: Due today, Waiting for you (overdue), Coming up (next 7 days), with warm empty states.
 6. Library list of topics by track, each shown as a lantern with its two flames.
 
-### P3 Review flow
+### P3 Review flow (done)
 
 1. Recall first: show only the title, ask the user to type or say what they remember.
 2. Reveal the original notes, then rate Forgot, Fuzzy or Solid.
@@ -177,10 +177,24 @@ Why each phase gets its model:
 - The capture button hides while on Capture.
 - Flames: unlit while a review is ahead, waiting when due or overdue, lit when done, steady when locked in.
 - Today's date comes from `useToday`, rechecked every minute and on return to the foreground (midnight and timezone changes).
-- Rows on Today are not tappable yet; P3 turns them into the review flow.
+- Rows on Today were not tappable in P2; P3 turned them into the review flow.
 - Theme stays in `localStorage` (needed before the database opens, to avoid a flash), not in Settings.
 - The app asks for persistent storage (`navigator.storage.persist`) on start.
 - Tests use `fake-indexeddb`, loaded in `setupTests.ts`.
+
+### P3
+- Review lives at `/review/:reviewId`. Rows in Due today and Waiting for you open it; Coming up rows do not, so nothing is reviewed early.
+- Steps: recall (title only), reveal (notes beside what was recalled), rate, then a done card with the lantern and what happens next.
+- Recall text is kept only for the visit, never stored. "Say it" means the keyboard's mic; the Web Speech API is not used because it goes over the network.
+- For `dsa-problem` the recall step asks for a fresh JavaScript solution in a mono box and offers the problem link; pattern, time taken and notes stay hidden until the reveal.
+- `recordReview` in `repo.ts` stores the rated review, any added review and the topic status in one transaction; a test proves a failed extra-review write keeps the rating out.
+- "Not today" uses `snoozeReview` and returns to Today with a notice. Snoozing is on the recall step only, before the notes are seen.
+- After rating, the done card offers the next waiting review (oldest first) or Back to Today.
+- Outcome words: Lit, Lit a little hazy, A little leaky, Locked in, Still glowing (graduation). Copy comes from `outcomeCopy` in `view.ts`, unit-tested.
+- Graduation reviews are a switch in Settings (`/settings`, reached from Library, default off). They apply to topics that lock in after it is switched on.
+- Settings writes are optimistic in the store and rolled back if Dexie fails.
+- The store's `lastCapture` became a generic `notice` string used by capture and snooze. Notices say "today", "tomorrow" or "on Wed 18 Nov".
+- New components: `RecallRating`, `Toggle` (checkbox with `role="switch"`), tappable `TopicRow` (`to` prop, stretched link). All on the style-guide page. Theme choice also appears in Settings.
 
 ## Environment notes
 

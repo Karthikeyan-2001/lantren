@@ -2,7 +2,7 @@
  * Every read and write of the database goes through here. Scheduling decisions are
  * the scheduler's; this module only stores what it returns.
  */
-import { createReviews, isLocalDate, toLocalDate } from '../scheduler';
+import { completeReview, createReviews, isLocalDate, snoozeReview, toLocalDate, type Recall } from '../scheduler';
 
 import type { LanternDB } from './db';
 import { newId } from './ids';
@@ -83,4 +83,61 @@ export async function saveTopic(
   });
 
   return { topic, reviews };
+}
+
+export class ReviewNotFoundError extends Error {}
+
+export interface ReviewOutcome {
+  topic: Topic;
+  /** The completed review as stored. */
+  review: Review;
+  /** Reviews this completion added: an extra after Forgot, or graduation reviews. */
+  added: Review[];
+  justLockedIn: boolean;
+}
+
+/**
+ * Records how a review went. The scheduler decides; this stores the completed review,
+ * any review it adds and the topic's new status, all in one transaction.
+ */
+export async function recordReview(db: LanternDB, reviewId: string, recall: Recall, now: Date): Promise<ReviewOutcome> {
+  return db.transaction('rw', [db.topics, db.reviews, db.settings], async () => {
+    const target = await db.reviews.get(reviewId);
+    const topic = target && (await db.topics.get(target.topicId));
+    if (!target || !topic) throw new ReviewNotFoundError('That review is no longer here.');
+    const settings = { ...DEFAULT_SETTINGS, ...(await db.settings.get('settings')) };
+    const siblings = await db.reviews.where('topicId').equals(topic.id).toArray();
+
+    const result = completeReview(topic, siblings, reviewId, recall, now, {
+      newId,
+      graduationReviews: settings.graduationReviews,
+    });
+    const review = result.reviews.find((r) => r.id === reviewId) ?? target;
+    const updatedTopic: Topic =
+      result.status === topic.status ? topic : { ...topic, status: result.status, updatedAt: now.toISOString() };
+
+    if (review !== target) await db.reviews.put(review);
+    if (result.added.length > 0) await db.reviews.bulkAdd(result.added);
+    if (updatedTopic !== topic) await db.topics.put(updatedTopic);
+    return { topic: updatedTopic, review, added: result.added, justLockedIn: result.justLockedIn };
+  });
+}
+
+/** "Not today": moves one review to tomorrow (or a day later if it is still ahead). */
+export async function snoozeReviewById(db: LanternDB, reviewId: string, now: Date): Promise<Review> {
+  return db.transaction('rw', [db.reviews], async () => {
+    const target = await db.reviews.get(reviewId);
+    if (!target) throw new ReviewNotFoundError('That review is no longer here.');
+    const moved = snoozeReview(target, now);
+    if (moved !== target) await db.reviews.put(moved);
+    return moved;
+  });
+}
+
+export async function updateSettings(db: LanternDB, patch: Partial<Omit<Settings, 'id'>>): Promise<Settings> {
+  return db.transaction('rw', [db.settings], async () => {
+    const next: Settings = { ...DEFAULT_SETTINGS, ...(await db.settings.get('settings')), ...patch, id: 'settings' };
+    await db.settings.put(next);
+    return next;
+  });
 }

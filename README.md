@@ -22,7 +22,7 @@ A quiet focus-and-study app built around the 1-4-7 spaced revision method. You l
 - **State:** Zustand (from P2). **Storage:** Dexie over IndexedDB (from P2), one code path for Android and the PWA.
 - **Fonts:** Fraunces (headings), Source Sans 3 (body), DM Mono (numbers), self-hosted through `@fontsource` so they work offline.
 - **PWA:** `vite-plugin-pwa` precaches the whole app for airplane mode.
-- **Tests:** Vitest for unit tests, Playwright for one smoke test.
+- **Tests:** Vitest for unit tests, Playwright for end-to-end checks of capture, review and settings.
 
 ## Setup
 

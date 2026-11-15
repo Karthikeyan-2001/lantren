@@ -209,3 +209,86 @@ export function Notice({ children, onDismiss }: { children: ReactNode; onDismiss
     </div>
   );
 }
+
+/* ---------- Recall rating ---------- */
+
+export type RecallValue = 'forgot' | 'fuzzy' | 'solid';
+
+const RECALL_OPTIONS: readonly { value: RecallValue; label: string; hint: string }[] = [
+  { value: 'forgot', label: 'Forgot', hint: 'It slipped away. One more look tomorrow.' },
+  { value: 'fuzzy', label: 'Fuzzy', hint: 'Parts came back, with gaps.' },
+  { value: 'solid', label: 'Solid', hint: 'It came back whole.' },
+];
+
+/**
+ * Three honest answers, stacked. Each is a real button: one tap records it. Forgot is
+ * drawn as calmly as the others; only Solid carries a little warmth.
+ */
+export function RecallRating({
+  onRate,
+  disabled,
+  labelledBy,
+}: {
+  onRate: (value: RecallValue) => void;
+  disabled?: boolean;
+  labelledBy?: string;
+}) {
+  return (
+    <div className="ln-rating" role="group" aria-labelledby={labelledBy}>
+      {RECALL_OPTIONS.map((o) => (
+        <button
+          key={o.value}
+          type="button"
+          className="ln-rating__option"
+          data-recall={o.value}
+          disabled={disabled}
+          onClick={() => onRate(o.value)}
+        >
+          <span className="ln-rating__label">{o.label}</span>
+          <span className="ln-rating__hint">{o.hint}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/* ---------- Toggle ---------- */
+
+/** An on/off setting: a checkbox drawn as a small lantern switch, announced as a switch. */
+export function Toggle({
+  label,
+  hint,
+  checked,
+  onChange,
+  disabled,
+}: {
+  label: string;
+  hint?: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  disabled?: boolean;
+}) {
+  const id = useId();
+  return (
+    <div className="ln-toggle">
+      <label className="ln-toggle__text" htmlFor={id}>
+        <span className="ln-toggle__label">{label}</span>
+        {hint && (
+          <span id={`${id}-hint`} className="ln-toggle__hint">
+            {hint}
+          </span>
+        )}
+      </label>
+      <input
+        id={id}
+        type="checkbox"
+        role="switch"
+        className="ln-toggle__input"
+        checked={checked}
+        disabled={disabled}
+        aria-describedby={hint ? `${id}-hint` : undefined}
+        onChange={(e) => onChange(e.target.checked)}
+      />
+    </div>
+  );
+}

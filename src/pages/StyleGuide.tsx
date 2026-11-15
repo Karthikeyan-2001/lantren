@@ -8,7 +8,18 @@ import { Flame } from '../ui/Flame';
 import { Lantern } from '../ui/Lantern';
 import { Screen } from '../ui/Screen';
 import { TopicRow } from '../ui/TopicRow';
-import { Button, Choice, EmptyState, Notice, Pill, ProgressRing, TextArea, TextField } from '../ui/controls';
+import {
+  Button,
+  Choice,
+  EmptyState,
+  Notice,
+  Pill,
+  ProgressRing,
+  RecallRating,
+  TextArea,
+  TextField,
+  Toggle,
+} from '../ui/controls';
 
 import './StyleGuide.css';
 
@@ -104,6 +115,8 @@ export function StyleGuidePage() {
   const { choice, resolved, setChoice } = useTheme();
   const [recall, setRecall] = useState<(typeof RECALL)[number]['value'] | null>('fuzzy');
   const [remaining, setRemaining] = useState(70);
+  const [rated, setRated] = useState<string>('nothing yet');
+  const [toggled, setToggled] = useState(false);
   const minutes = Math.round((remaining / 100) * 25);
 
   return (
@@ -112,7 +125,7 @@ export function StyleGuidePage() {
       title="Lantern"
       lede="Studying is carrying a lantern through the dark. This page holds every piece the app is built from."
     >
-      <Link to="/library" className="ln-btn ln-btn--ghost sg-back">
+      <Link to="/library" className="ln-btn ln-btn--ghost ln-back">
         ← Library
       </Link>
 
@@ -232,6 +245,7 @@ export function StyleGuidePage() {
             colour="var(--track-ember)"
             trackName="DSA in JavaScript"
             meta="day 7, since yesterday"
+            to="/styleguide"
           />
           <TopicRow
             title="Chunking strategies for RAG"
@@ -240,6 +254,23 @@ export function StyleGuidePage() {
             meta="Concept · studied Mon 2 Nov · locked in"
           />
         </ul>
+      </Section>
+
+      <Section
+        title="Recall rating"
+        note="After the reveal. Three honest answers; Forgot is drawn as calmly as the rest."
+      >
+        <RecallRating onRate={setRated} />
+        <p className="ln-small ln-muted">Last tapped: {rated}</p>
+      </Section>
+
+      <Section title="Toggle" note="For on/off settings. Announced as a switch.">
+        <Toggle
+          label="Graduation reviews"
+          hint="After a topic locks in, look again on day 14 and day 30."
+          checked={toggled}
+          onChange={setToggled}
+        />
       </Section>
 
       <Section title="Notice" note="A one-line confirmation. Polite to screen readers, gone when dismissed.">
