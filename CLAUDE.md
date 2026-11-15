@@ -21,7 +21,7 @@ The user is a working software engineer in Chennai (IST) upskilling toward AI en
 | P3 | Review flow | done | `2872ae8` | Opus 5.5 (used) |
 | P4 | Notifications | done (not yet run on a device) | `5d17047` | Fable 5.2 (used) |
 | P5 | Focus mode and ambient sound | done (sound and screen lock not yet tried on a phone) | `719b607` | Fable 5.2 (used) |
-| P6 | Progress, tracks and weekly goals, export and import | done (export not yet tried on a phone) | `HASH` | Sonnet 5.5 (used) |
+| P6 | Progress, tracks and weekly goals, export and import | done (export not yet tried on a phone) | `27da090` | Sonnet 5.5 (used) |
 | P7 | Polish, accessibility pass, Android build | next | | Opus 5.5 |
 
 ## Which model to use
