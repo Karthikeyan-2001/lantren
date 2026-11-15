@@ -17,7 +17,7 @@ The user is a working software engineer in Chennai (IST) upskilling toward AI en
 | --- | --- | --- | --- | --- |
 | P0 | Project setup, design tokens, style-guide page | done | `5e16fcf` | Fable 5.2 (used) |
 | P1 | Scheduler module and tests | done | `f4d93da` | Fable 5.2 (used) |
-| P2 | Data layer, Capture, Today | done | see `git log` | Opus 5.5 (used) |
+| P2 | Data layer, Capture, Today | done | `26a6078` | Opus 5.5 (used) |
 | P3 | Review flow | next | | Opus 5.5 |
 | P4 | Notifications | | | Fable 5.2 |
 | P5 | Focus mode and ambient sound | | | Fable 5.2 |
