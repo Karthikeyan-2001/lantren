@@ -8,12 +8,13 @@ import {
   ReviewNotFoundError,
   loadAll,
   recordReview,
+  saveFocusSession,
   saveTopic,
   snoozeReviewById,
   updateSettings,
 } from './repo';
 import { createLanternStore } from './store';
-import type { TopicInput } from './types';
+import type { FocusSession, TopicInput } from './types';
 
 let n = 0;
 const opened: LanternDB[] = [];
@@ -268,5 +269,58 @@ describe('store reviews', () => {
 
     await store.getState().updateSettings({ graduationReviews: true });
     expect(store.getState().settings.graduationReviews).toBe(true);
+  });
+});
+
+describe('focus sessions', () => {
+  const session = (over: Partial<FocusSession> = {}): FocusSession => ({
+    id: 'focus-1',
+    startedAt: NOW.toISOString(),
+    endedAt: new Date(NOW.getTime() + 25 * 60_000).toISOString(),
+    plannedMinutes: 25,
+    focusedMinutes: 25,
+    trackId: 'track-js',
+    interruptions: 0,
+    parkingLot: ['renew the domain'],
+    ...over,
+  });
+
+  test('a finished session is stored and comes back on the next load, oldest first', async () => {
+    const db = freshDb();
+    const later = session({ id: 'focus-2', startedAt: new Date(NOW.getTime() + 3_600_000).toISOString() });
+    await saveFocusSession(db, later);
+    await saveFocusSession(db, session());
+    expect((await loadAll(db)).focusSessions).toEqual([session(), later]);
+  });
+
+  test('saving the same session again replaces it', async () => {
+    const db = freshDb();
+    await saveFocusSession(db, session());
+    await saveFocusSession(db, session({ focusedMinutes: 22, interruptions: 1 }));
+    const stored = (await loadAll(db)).focusSessions;
+    expect(stored).toHaveLength(1);
+    expect(stored[0]?.focusedMinutes).toBe(22);
+  });
+
+  test('the store keeps finished sessions in memory, and nothing if the write fails', async () => {
+    const db = freshDb();
+    const store = createLanternStore(db);
+    await store.getState().load();
+    await store.getState().logFocus(session());
+    expect(store.getState().focusSessions).toEqual([session()]);
+
+    vi.spyOn(db.focusSessions, 'put').mockRejectedValueOnce(new Error('disk full'));
+    await expect(store.getState().logFocus(session({ id: 'focus-2' }))).rejects.toThrow('disk full');
+    expect(store.getState().focusSessions).toHaveLength(1);
+  });
+
+  test('settings from before focus mode pick up the focus defaults', async () => {
+    const db = freshDb();
+    await db.settings.put({ id: 'settings', reminders: true } as never);
+    const { settings } = await loadAll(db);
+    expect(settings.reminders).toBe(true);
+    expect(settings.focusMinutes).toBe(25);
+    expect(settings.focusSound).toBe('off');
+    expect(settings.focusChime).toBe(true);
   });
 });

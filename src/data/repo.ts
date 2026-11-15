@@ -7,24 +7,26 @@ import { completeReview, createReviews, isLocalDate, snoozeReview, toLocalDate, 
 import type { LanternDB } from './db';
 import { newId } from './ids';
 import { DEFAULT_SETTINGS } from './seed';
-import type { Review, Settings, Topic, TopicInput, Track } from './types';
+import type { FocusSession, Review, Settings, Topic, TopicInput, Track } from './types';
 
 export interface Snapshot {
   tracks: Track[];
   topics: Topic[];
   reviews: Review[];
+  focusSessions: FocusSession[];
   settings: Settings;
 }
 
 export async function loadAll(db: LanternDB): Promise<Snapshot> {
-  return db.transaction('r', [db.tracks, db.topics, db.reviews, db.settings], async () => {
-    const [tracks, topics, reviews, settings] = await Promise.all([
+  return db.transaction('r', [db.tracks, db.topics, db.reviews, db.focusSessions, db.settings], async () => {
+    const [tracks, topics, reviews, focusSessions, settings] = await Promise.all([
       db.tracks.orderBy('order').toArray(),
       db.topics.toArray(),
       db.reviews.toArray(),
+      db.focusSessions.orderBy('startedAt').toArray(),
       db.settings.get('settings'),
     ]);
-    return { tracks, topics, reviews, settings: { ...DEFAULT_SETTINGS, ...settings } };
+    return { tracks, topics, reviews, focusSessions, settings: { ...DEFAULT_SETTINGS, ...settings } };
   });
 }
 
@@ -140,4 +142,13 @@ export async function updateSettings(db: LanternDB, patch: Partial<Omit<Settings
     await db.settings.put(next);
     return next;
   });
+}
+
+/**
+ * Stores a finished focus session. Saving the same session again replaces it, so a
+ * retry after a failed write cannot make two.
+ */
+export async function saveFocusSession(db: LanternDB, session: FocusSession): Promise<FocusSession> {
+  await db.focusSessions.put(session);
+  return session;
 }

@@ -88,6 +88,54 @@ export function TextArea({ label, hint, error, ...rest }: FieldBase & ComponentP
   );
 }
 
+/** A native picker for one of many, styled as a field. Pass `<option>`s as children. */
+export function SelectField({ label, hint, error, children, ...rest }: FieldBase & ComponentProps<'select'>) {
+  const id = useId();
+  return (
+    <div className="ln-field">
+      <label className="ln-field__label" htmlFor={id}>
+        {label}
+      </label>
+      <select
+        id={id}
+        className="ln-field__control"
+        aria-describedby={hint || error ? `${id}-hint` : undefined}
+        aria-invalid={error ? true : undefined}
+        {...rest}
+      >
+        {children}
+      </select>
+      <FieldNote id={id} hint={hint} error={error} />
+    </div>
+  );
+}
+
+/** A slider. `valueText` is what a screen reader hears, for example "60 percent". */
+export function RangeField({
+  label,
+  hint,
+  valueText,
+  ...rest
+}: Omit<FieldBase, 'error'> & { valueText?: string } & ComponentProps<'input'>) {
+  const id = useId();
+  return (
+    <div className="ln-field">
+      <label className="ln-field__label" htmlFor={id}>
+        {label}
+      </label>
+      <input
+        id={id}
+        type="range"
+        className="ln-range"
+        aria-valuetext={valueText}
+        aria-describedby={hint ? `${id}-hint` : undefined}
+        {...rest}
+      />
+      <FieldNote id={id} hint={hint} />
+    </div>
+  );
+}
+
 /* ---------- Choice pills ---------- */
 
 interface ChoiceProps<T extends string> {

@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { contrastRatio, parseColour } from '../theme/contrast';
 import { useTheme, type ThemeChoice } from '../theme/theme';
 import { Flame } from '../ui/Flame';
+import { Hearth } from '../ui/Hearth';
 import { Lantern } from '../ui/Lantern';
 import { Screen } from '../ui/Screen';
 import { TopicRow } from '../ui/TopicRow';
@@ -16,7 +17,9 @@ import {
   Offer,
   Pill,
   ProgressRing,
+  RangeField,
   RecallRating,
+  SelectField,
   TextArea,
   TextField,
   Toggle,
@@ -119,6 +122,7 @@ export function StyleGuidePage() {
   const [rated, setRated] = useState<string>('nothing yet');
   const [toggled, setToggled] = useState(false);
   const [time, setTime] = useState('19:30');
+  const [volume, setVolume] = useState(60);
   const minutes = Math.round((remaining / 100) * 25);
 
   return (
@@ -325,24 +329,55 @@ export function StyleGuidePage() {
         </div>
       </Section>
 
-      <Section title="Focus timer" note="The flame dims as the session runs down. Drag to see it.">
-        <div className="ln-timer">
-          <Flame state="lit" size={72} level={remaining / 100} />
+      <Section title="Select and slider" note="The device’s own picker and slider, for one of many and for how much.">
+        <SelectField label="Link a topic" defaultValue="" hint="Optional.">
+          <option value="">No topic</option>
+          <option value="closures">Closures and the event loop</option>
+          <option value="two-sum">Two sum, with a hash map</option>
+        </SelectField>
+        <RangeField
+          label="Volume"
+          min={0}
+          max={100}
+          step={5}
+          value={volume}
+          valueText={`${volume} percent`}
+          onChange={(e) => setVolume(Number(e.target.value))}
+        />
+      </Section>
+
+      <Section
+        title="Hearth"
+        note="The focus screen’s one picture. The flame and the light on the glass dim together as a session runs down. Drag to see it."
+      >
+        <div className="ln-focus__preview">
+          <Hearth mood="burning" level={remaining / 100} compact />
           <span className="ln-timer__digits" aria-hidden="true">
             {String(minutes).padStart(2, '0')}:00
           </span>
         </div>
-        <label className="ln-field">
-          <span className="ln-field__label">Time remaining: {minutes} of 25 minutes</span>
-          <input
-            className="ln-range"
-            type="range"
-            min={0}
-            max={100}
-            value={remaining}
-            onChange={(e) => setRemaining(Number(e.target.value))}
-          />
-        </label>
+        <RangeField
+          label={`Time remaining: ${minutes} of 25 minutes`}
+          min={0}
+          max={100}
+          value={remaining}
+          onChange={(e) => setRemaining(Number(e.target.value))}
+        />
+        <ul className="sg-flames">
+          {(
+            [
+              ['ready', 'ready'],
+              ['held', 'paused'],
+              ['resting', 'on a break'],
+              ['glow', 'finished'],
+            ] as const
+          ).map(([mood, word]) => (
+            <li key={mood}>
+              <Hearth mood={mood} level={0.6} compact />
+              <span className="ln-small ln-muted">{word}</span>
+            </li>
+          ))}
+        </ul>
       </Section>
 
       <Section title="Empty state" note="Warm, and it always says what to do next.">

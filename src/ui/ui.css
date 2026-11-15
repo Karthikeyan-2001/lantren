@@ -479,14 +479,7 @@ textarea.ln-field__control {
   margin-top: 8px;
 }
 
-/* ---------- Timer specimen ---------- */
-.ln-timer {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  gap: var(--sp-5);
-  padding: var(--sp-6) 0 var(--sp-4);
-}
+/* ---------- Timer digits ---------- */
 .ln-timer__digits {
   font-family: var(--font-mono);
   font-weight: 300;
@@ -960,4 +953,180 @@ textarea.ln-field__control {
 .ln-back {
   align-self: flex-start;
   margin: calc(-1 * var(--sp-4)) 0 calc(-1 * var(--sp-4)) calc(-1 * var(--sp-3));
+}
+
+/* ---------- Select and range fields ---------- */
+select.ln-field__control {
+  cursor: pointer;
+}
+.ln-range:focus-visible {
+  border-radius: var(--r-pill);
+}
+
+/* ---------- Hearth: the focus flame in its window ---------- */
+.ln-hearth {
+  --hearth-level: 1;
+  position: relative;
+  display: grid;
+  place-items: end center;
+  width: min(56vw, 208px);
+  aspect-ratio: 5 / 7;
+  padding-bottom: 15%;
+  flex: none;
+  border-radius: var(--r-arch);
+  border: var(--hairline-w) solid var(--hairline-strong);
+  background: var(--surface);
+  overflow: hidden;
+  transition:
+    border-color var(--dur-slow) var(--ease-settle),
+    box-shadow var(--dur-slow) var(--ease-settle);
+}
+.ln-hearth--compact {
+  width: 120px;
+}
+/* light thrown on the glass: it shrinks and fades as the flame burns down */
+.ln-hearth__light {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 62% at 50% 80%, var(--glow), transparent 72%);
+  opacity: calc(0.12 + 0.88 * var(--hearth-level));
+  transform-origin: 50% 85%;
+  transform: scale(calc(0.7 + 0.3 * var(--hearth-level)));
+  transition:
+    opacity var(--dur-slow) var(--ease-settle),
+    transform var(--dur-slow) var(--ease-settle);
+}
+.ln-hearth__flame {
+  position: relative;
+  display: grid;
+  transform-origin: 50% 100%;
+  animation: ln-sway 7s var(--ease-settle) infinite alternate;
+}
+@keyframes ln-sway {
+  from {
+    rotate: -1.6deg;
+  }
+  to {
+    rotate: 1.6deg;
+  }
+}
+.ln-hearth__sill {
+  position: absolute;
+  left: 30%;
+  right: 30%;
+  bottom: 13%;
+  border-top: var(--hairline-w) solid var(--hairline-strong);
+}
+.ln-hearth[data-mood='held'] .ln-hearth__flame,
+.ln-hearth[data-mood='glow'] .ln-hearth__flame {
+  animation: none;
+}
+.ln-hearth[data-mood='held'] .ln-hearth__light,
+.ln-hearth[data-mood='resting'] .ln-hearth__light {
+  opacity: calc(0.08 + 0.4 * var(--hearth-level));
+}
+/* finished: the whole window is warm, and a little of it spills out */
+.ln-hearth[data-mood='glow'] {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  box-shadow: 0 0 72px var(--glow-steady);
+}
+.ln-hearth[data-mood='glow'] .ln-hearth__light {
+  background: radial-gradient(ellipse 95% 80% at 50% 78%, var(--glow-steady), transparent 78%);
+  animation: ln-warm var(--dur-slow) var(--ease-calm) both;
+}
+@keyframes ln-warm {
+  from {
+    opacity: 0.2;
+  }
+}
+
+/* ---------- Focus screen ---------- */
+.ln-focus {
+  max-width: var(--content-max);
+  min-height: 100%;
+  margin: 0 auto;
+  padding: calc(var(--sp-6) + env(safe-area-inset-top)) var(--gutter) calc(var(--sp-6) + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+  animation: ln-rise var(--dur-slow) var(--ease-calm) both;
+}
+.ln-focus > .ln-hearth {
+  margin-top: var(--sp-4);
+}
+.ln-focus .ln-timer__digits,
+.ln-focus__preview .ln-timer__digits {
+  margin: 0;
+}
+.ln-focus__kicker {
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.ln-focus__preview {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--sp-5);
+}
+.ln-focus__preview .ln-timer__digits {
+  font-size: clamp(3rem, 16vw, 5rem);
+}
+/* one quiet line under the timer; keeps its height so nothing jumps when it speaks */
+.ln-focus__line {
+  min-height: 1.6em;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  text-align: center;
+}
+.ln-focus__words {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  text-align: center;
+}
+.ln-focus__words h1:focus {
+  outline: none;
+}
+.ln-focus__words p {
+  color: var(--text-muted);
+  max-width: 32ch;
+}
+.ln-focus__park {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-2);
+  width: 100%;
+}
+.ln-focus__park .ln-field {
+  flex: 1;
+  min-width: 0;
+}
+.ln-focus__parked {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+.ln-focus__parked ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.ln-focus__parked li {
+  padding: var(--sp-2) 0;
+  border-top: var(--hairline-w) solid var(--hairline);
+  font-size: var(--fs-small);
+  overflow-wrap: anywhere;
+}
+.ln-focus__actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+}
+.ln-focus__sound {
+  width: 100%;
 }

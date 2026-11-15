@@ -35,9 +35,13 @@ const DESTINATIONS = [
   },
 ] as const;
 
-/** Three destinations, plus the floating capture lantern. */
-export function Nav() {
+/**
+ * Three destinations, plus the floating capture lantern. `hidden` takes all of it away,
+ * for the one screen that is meant to be the only thing on the phone: a running focus session.
+ */
+export function Nav({ hidden = false }: { hidden?: boolean }) {
   const { pathname } = useLocation();
+  if (hidden) return null;
   return (
     <>
       <nav className="ln-nav" aria-label="Main">

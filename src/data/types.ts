@@ -1,3 +1,4 @@
+import type { SleepFade, SoundChoice } from '../focus/config';
 import type { LocalDate, TopicStatus } from '../scheduler';
 
 export type { Review } from '../scheduler';
@@ -52,6 +53,7 @@ export interface FocusSession {
   startedAt: string;
   endedAt?: string;
   plannedMinutes: number;
+  /** Minutes on the timer, less any time spent away from the app. */
   focusedMinutes: number;
   topicId?: string;
   trackId?: string;
@@ -74,6 +76,17 @@ export interface Settings {
   quietHours: { start: string; end: string } | null;
   /** Remembered so Capture is one tap shorter next time. */
   lastTrackId: string | null;
+  /** Focus: the last session length chosen, in minutes. */
+  focusMinutes: number;
+  /** Focus: the track the last session was for. */
+  focusTrackId: string | null;
+  focusSound: SoundChoice;
+  /** 0 to 1. */
+  focusVolume: number;
+  /** Minutes after which the sound fades away; 0 keeps it for the whole session. */
+  focusSleepFade: SleepFade;
+  /** A soft chime when a session or a break ends. */
+  focusChime: boolean;
 }
 
 /** What Capture hands to the repository. */

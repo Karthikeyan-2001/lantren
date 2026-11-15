@@ -3,9 +3,17 @@ import { create } from 'zustand';
 import { toLocalDate, type Recall } from '../scheduler';
 
 import { db as defaultDb, type LanternDB } from './db';
-import { loadAll, recordReview, saveTopic, snoozeReviewById, updateSettings, type ReviewOutcome } from './repo';
+import {
+  loadAll,
+  recordReview,
+  saveFocusSession,
+  saveTopic,
+  snoozeReviewById,
+  updateSettings,
+  type ReviewOutcome,
+} from './repo';
 import { DEFAULT_SETTINGS } from './seed';
-import type { Review, Settings, Topic, TopicInput, Track } from './types';
+import type { FocusSession, Review, Settings, Topic, TopicInput, Track } from './types';
 import { whenWords } from './view';
 
 interface LanternState {
@@ -13,6 +21,8 @@ interface LanternState {
   tracks: Track[];
   topics: Topic[];
   reviews: Review[];
+  /** Finished focus sessions, oldest first. */
+  focusSessions: FocusSession[];
   settings: Settings;
   /** One quiet line shown on Today after a capture or a snooze. Memory only. */
   notice: string | null;
@@ -20,6 +30,7 @@ interface LanternState {
   capture: (input: TopicInput) => Promise<Topic>;
   review: (reviewId: string, recall: Recall) => Promise<ReviewOutcome>;
   snooze: (reviewId: string) => Promise<Review>;
+  logFocus: (session: FocusSession) => Promise<void>;
   updateSettings: (patch: Partial<Omit<Settings, 'id'>>) => Promise<void>;
   dismissNotice: () => void;
 }
@@ -34,6 +45,7 @@ export function createLanternStore(db: LanternDB) {
     tracks: [],
     topics: [],
     reviews: [],
+    focusSessions: [],
     settings: DEFAULT_SETTINGS,
     notice: null,
 
@@ -77,6 +89,11 @@ export function createLanternStore(db: LanternDB) {
         };
       });
       return moved;
+    },
+
+    logFocus: async (session) => {
+      const stored = await saveFocusSession(db, session);
+      set((s) => ({ focusSessions: [...s.focusSessions.filter((f) => f.id !== stored.id), stored] }));
     },
 
     // Optimistic, so a switch moves the moment it is tapped; put back if the write fails.

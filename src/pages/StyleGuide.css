@@ -115,3 +115,9 @@
   font-style: italic;
   color: var(--accent-text);
 }
+
+/* Four hearths side by side: let each fill its column. */
+.sg-flames .ln-hearth {
+  width: 100%;
+  max-width: 120px;
+}

@@ -20,8 +20,8 @@ The user is a working software engineer in Chennai (IST) upskilling toward AI en
 | P2 | Data layer, Capture, Today | done | `26a6078` | Opus 5.5 (used) |
 | P3 | Review flow | done | `2872ae8` | Opus 5.5 (used) |
 | P4 | Notifications | done (not yet run on a device) | `5d17047` | Fable 5.2 (used) |
-| P5 | Focus mode and ambient sound | next | | Fable 5.2 |
-| P6 | Progress, tracks and weekly goals, export and import | | | Sonnet 5.5 |
+| P5 | Focus mode and ambient sound | done (sound and screen lock not yet tried on a phone) | `HASH` | Fable 5.2 (used) |
+| P6 | Progress, tracks and weekly goals, export and import | next | | Sonnet 5.5 |
 | P7 | Polish, accessibility pass, Android build | | | Opus 5.5 |
 
 ## Which model to use
@@ -88,12 +88,12 @@ Why each phase gets its model:
 3. Optional daily digest ("3 reviews waiting, about 12 minutes"). Quiet hours.
 4. Reschedule everything when topics, settings or the timezone change.
 
-### P5 Focus mode and ambient sound
+### P5 Focus mode and ambient sound (done)
 
-1. Sessions of 25, 50, 90 minutes or custom, optionally linked to a topic. Full screen, one big timer, a flame that dims.
-2. Parking lot box for stray thoughts. Leaving the app mid-session is logged as an interruption. Keep the screen awake.
-3. Short and long breaks with a gentle prompt. Finishing leaves a warm glow, never confetti.
-4. Ambient sound generated with the Web Audio API (rain, brown noise, soft hum), volume control and a sleep fade.
+1. Sessions of 25, 50, 90 minutes or custom (5 to 180), for a track and optionally linked to a topic. Once begun, the navigation steps aside: one flame in a lantern window (`Hearth`) that dims, one big timer.
+2. Parking lot box for stray thoughts. Leaving the app mid-session is logged as an interruption and the time away is not counted as focused. The screen is kept awake.
+3. A 5 or 15 minute break is offered after a session, then a gentle "Ready when you are". Finishing leaves a warm glow, never confetti.
+4. Ambient sound generated with the Web Audio API (rain, brown noise, soft hum), volume control, a sleep fade and an optional end chime.
 
 ### P6 Progress, tracks and goals, export and import
 
@@ -209,6 +209,26 @@ Why each phase gets its model:
 - New component: `Offer`. Time fields are `TextField type="time"`. Both on the style-guide page.
 - Playwright covers the offer (yes and not now) and the reminder settings, with notification permission granted to the test browser.
 - Left for P7: notification small icon, and testing all of this on a real device.
+
+### P5
+- Code lives in `src/focus`: `config.ts` (every number), `session.ts` (pure timer rules over a `FocusRun`, time passed in as epoch ms), `store.ts` (Zustand phases: idle, focus, done, break, breakOver), `noise.ts` (pure sample maths), `sound.ts` (the only Web Audio caller), `awake.ts` (the only screen-lock caller), `copy.ts`, `useFocus.ts` (wiring and the app-wide lifecycle hook). The screen is `src/pages/Focus.tsx`.
+- The timer follows the wall clock (an end instant, not a count of ticks), so it stays right when the app is throttled, hidden or restarted.
+- Leaving the app while the timer runs is one interruption. The timer keeps going; the time away is subtracted from focused minutes. Absences under 10 seconds do not count, and leaving while paused or on a break does not count.
+- Pause exists and is not an interruption. "End here" keeps the session if at least 1 focused minute was done; less than that keeps nothing. There is no confirmation dialog.
+- A running session is kept in `localStorage` under `lantern.focus` (rewritten on every change and every 15 seconds), so it survives the app being killed. On reopening, the gap counts as away; if the timer ran out meanwhile, the done card shows and the session ends at the moment the timer reached zero.
+- A finished session is one `FocusSession` row, written when it ends (not at start). `focusedMinutes` is rounded down. The store keeps `focusSessions` in memory for P6.
+- A session belongs to a track (remembered as `focusTrackId`, falling back to the last captured track); linking a topic files it under that topic's track.
+- Breaks: 15 minutes is suggested after a session of 50 minutes or more, or after every fourth session begun today; otherwise 5. Both are offered. Breaks are not stored and do not survive a restart.
+- "Full screen" means the navigation and capture button are hidden on `/focus` while a session or break is on. Hiding the Android status bar is left for P7.
+- Screen awake: `@capacitor-community/keep-awake` on Android, the Screen Wake Lock API in a browser (asked for again on each return, since browsers drop it when hidden).
+- Sound is synthesised on the device, no audio files: rain is filtered noise with drops baked in, brown noise is integrated white noise, the hum is a low open fifth. Ten-second loops are crossfaded at the join so they do not click.
+- Sound plays only while the timer runs: it fades out on pause and at the end. The sleep fade (never, 15, 30, 60 minutes) reaches silence at the chosen minute after a one-minute fade; choosing a sound or a fade again restarts it.
+- The audio context is only created inside a tap (Begin, or the first tap after a restart), so browsers never block it and no console warning appears.
+- A soft two-note chime marks the end of a session and of a break (setting `focusChime`, default on). There is no end-of-session notification: if the app is in the background the done card is waiting on return.
+- Focus settings (`focusMinutes`, `focusTrackId`, `focusSound`, `focusVolume`, `focusSleepFade`, `focusChime`) are new fields on `Settings`; older stored settings pick up the defaults on load, so the Dexie schema is still v1.
+- New components: `Hearth`, `SelectField`, `RangeField`, and `Nav`'s `hidden` prop. All on the style-guide page. `Placeholders.tsx` is gone.
+- Playwright covers a full session (park, pause, finish, break) and an early stop, using its fake clock.
+- Left for P7: hear the three sounds on a phone speaker and adjust their levels, check that sound and the wake lock behave on Android when the screen is turned off, hide the status bar during a session.
 
 ## Environment notes
 

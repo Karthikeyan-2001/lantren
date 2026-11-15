@@ -31,4 +31,10 @@ export const DEFAULT_SETTINGS: Settings = {
   dailyDigest: false,
   quietHours: { start: '22:00', end: '07:00' },
   lastTrackId: null,
+  focusMinutes: 25,
+  focusTrackId: null,
+  focusSound: 'off',
+  focusVolume: 0.5,
+  focusSleepFade: 0,
+  focusChime: true,
 };

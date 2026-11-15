@@ -1,12 +1,13 @@
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { useEffect } from 'react';
-import { Navigate, Route } from 'react-router-dom';
+import { Navigate, Route, useLocation } from 'react-router-dom';
 
 import { useLantern } from './data/store';
+import { useFocus, useFocusLifecycle } from './focus/useFocus';
 import { CapturePage } from './pages/Capture';
+import { FocusPage } from './pages/Focus';
 import { LibraryPage } from './pages/Library';
-import { FocusPage } from './pages/Placeholders';
 import { ReviewPage } from './pages/Review';
 import { SettingsPage } from './pages/Settings';
 import { StyleGuidePage } from './pages/StyleGuide';
@@ -48,8 +49,16 @@ function Reminders() {
   return null;
 }
 
+/** The navigation steps aside while a focus session or its break fills the Focus screen. */
+function AppNav() {
+  const { pathname } = useLocation();
+  const phase = useFocus((s) => s.phase);
+  return <Nav hidden={pathname.startsWith('/focus') && phase !== 'idle'} />;
+}
+
 const App: React.FC = () => {
   useStartup();
+  useFocusLifecycle();
   return (
     <IonApp>
       <IonReactRouter>
@@ -63,7 +72,7 @@ const App: React.FC = () => {
           <Route path="/styleguide" element={<StyleGuidePage />} />
           <Route path="/" element={<Navigate to="/today" replace />} />
         </IonRouterOutlet>
-        <Nav />
+        <AppNav />
         <Reminders />
       </IonReactRouter>
       <div className="ln-grain" aria-hidden="true" />

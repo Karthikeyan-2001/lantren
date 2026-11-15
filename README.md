@@ -11,8 +11,8 @@ A quiet focus-and-study app built around the 1-4-7 spaced revision method. You l
 | P2 | Data layer, Capture, Today | done |
 | P3 | Review flow | done |
 | P4 | Notifications | done |
-| P5 | Focus mode and ambient sound | next |
-| P6 | Progress, tracks and weekly goals, export and import | |
+| P5 | Focus mode and ambient sound | done |
+| P6 | Progress, tracks and weekly goals, export and import | next |
 | P7 | Polish, accessibility pass, Android build | |
 
 ## Stack and decisions
@@ -21,8 +21,9 @@ A quiet focus-and-study app built around the 1-4-7 spaced revision method. You l
 - **Ionic is structure only.** Its core and structure CSS and the page/router shell are used; no Ionic palettes, typography or UI components. Everything visible lives in `src/ui` and `src/theme`.
 - **State:** Zustand (from P2). **Storage:** Dexie over IndexedDB (from P2), one code path for Android and the PWA.
 - **Fonts:** Fraunces (headings), Source Sans 3 (body), DM Mono (numbers), self-hosted through `@fontsource` so they work offline.
+- **Focus:** the timer follows the wall clock; ambient sound (rain, brown noise, soft hum) is synthesised with the Web Audio API, so there are no audio files; the screen is kept awake with `@capacitor-community/keep-awake`.
 - **PWA:** `vite-plugin-pwa` precaches the whole app for airplane mode.
-- **Tests:** Vitest for unit tests, Playwright for end-to-end checks of capture, review and settings.
+- **Tests:** Vitest for unit tests, Playwright for end-to-end checks of capture, review, settings and focus sessions.
 
 ## Setup
 
@@ -85,7 +86,10 @@ Then run on a device from Android Studio, or build an APK with Build > Build APK
 ```
 src/theme     tokens.css (palette, type, shape, motion), base.css, theme switch, contrast test
 src/scheduler pure 1-4-7 rules (config.ts holds REVIEW_OFFSETS), local-date helpers, tests
-src/ui        Lantern's own components: Flame, Lantern, Button, fields, Choice, ProgressRing, Nav, Screen
+src/data      model, Dexie schema, repository, Zustand store
+src/reminders reminder planning and scheduling (Capacitor Local Notifications)
+src/focus     focus timer rules, ambient sound, screen wake lock
+src/ui        Lantern's own components: Flame, Lantern, Hearth, Button, fields, Choice, ProgressRing, Nav, Screen
 src/pages     screens; StyleGuide.tsx shows every token and component
 scripts       make-icons.mjs draws the app icons
 ```

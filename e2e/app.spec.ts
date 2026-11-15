@@ -189,3 +189,92 @@ test('"Not now" puts the reminder offer away for good', async ({ page, context }
   await page.goto('/settings');
   await expect(page.getByRole('switch', { name: 'Review reminders' })).not.toBeChecked();
 });
+
+/** Finished focus sessions as stored on the device. */
+function storedFocusSessions(page: Page) {
+  return page.evaluate(
+    () =>
+      new Promise<{ focusedMinutes: number; trackId?: string; parkingLot: string[] }[]>((resolve) => {
+        const open = indexedDB.open('lantern');
+        open.onsuccess = () => {
+          const all = open.result.transaction('focusSessions').objectStore('focusSessions').getAll();
+          all.onsuccess = () => {
+            resolve(all.result);
+            open.result.close();
+          };
+        };
+      }),
+  );
+}
+
+test('a focus session runs down, ends warm, is saved, and offers a break', async ({ page }) => {
+  await page.clock.install();
+  await page.goto('/focus');
+  await page.getByRole('radio', { name: 'System design' }).check();
+  await page.getByRole('button', { name: 'Begin' }).click();
+
+  // Full screen: the navigation and the capture button step aside.
+  await expect(page.getByRole('timer')).toHaveText(/^2[45]:\d\d$/);
+  await expect(page.getByRole('navigation', { name: 'Main' })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: 'Capture what you studied' })).toHaveCount(0);
+
+  const thought = page.getByRole('textbox', { name: 'Park a thought' });
+  await thought.fill('renew the domain');
+  await thought.press('Enter');
+  await expect(thought).toHaveValue('');
+  await expect(page.getByRole('region', { name: 'Parked, safe until later' })).toContainText('renew the domain');
+
+  // A pause holds the timer however long it lasts.
+  await page.getByRole('button', { name: 'Pause' }).click();
+  await page.clock.fastForward('40:00');
+  await expect(page.getByText('Paused. The flame is holding.')).toBeVisible();
+  await expect(page.getByRole('timer')).toHaveText(/^2[45]:\d\d$/);
+  await page.getByRole('button', { name: 'Carry on' }).click();
+
+  await page.clock.fastForward('25:00');
+  await expect(page.getByRole('heading', { level: 1, name: 'That was good work' })).toBeVisible();
+  await expect(page.getByText('25 minutes on System design.')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Parked for later' })).toContainText('renew the domain');
+  await expect.poll(() => storedFocusSessions(page)).toHaveLength(1);
+  expect((await storedFocusSessions(page))[0]).toMatchObject({
+    focusedMinutes: 25,
+    trackId: 'track-sd',
+    parkingLot: ['renew the domain'],
+  });
+
+  await page.getByRole('button', { name: 'Take 5 minutes' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Rest a little' })).toBeVisible();
+  await page.clock.fastForward('05:00');
+  await expect(page.getByRole('heading', { level: 1, name: 'Ready when you are' })).toBeVisible();
+  await page.getByRole('button', { name: 'Done for now' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'One flame, one thing' })).toBeVisible();
+  await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible();
+});
+
+test('ending a focus session early keeps what was done; a false start keeps nothing', async ({ page }) => {
+  await page.clock.install();
+  await page.goto('/focus');
+
+  // A custom length outside the limits cannot begin.
+  await page.getByRole('radio', { name: 'Custom' }).check();
+  await page.getByLabel('Custom length').fill('3');
+  await expect(page.getByRole('button', { name: 'Begin' })).toBeDisabled();
+  await page.getByLabel('Custom length').fill('40');
+  await page.getByRole('button', { name: 'Begin' }).click();
+  await expect(page.getByRole('timer')).toHaveText(/^(40:00|39:\d\d)$/);
+
+  await page.getByRole('button', { name: 'End here' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'One flame, one thing' })).toBeVisible();
+  expect(await storedFocusSessions(page)).toHaveLength(0);
+
+  await page.getByRole('button', { name: 'Begin' }).click();
+  await page.clock.fastForward('12:00');
+  await page.getByRole('button', { name: 'End here' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Stopped at 12 minutes' })).toBeVisible();
+  await expect.poll(() => storedFocusSessions(page)).toHaveLength(1);
+  await page.getByRole('button', { name: 'Done for now' }).click();
+
+  // The length is remembered.
+  await page.reload();
+  await expect(page.getByLabel('Custom length')).toHaveValue('40');
+});
