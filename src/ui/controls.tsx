@@ -210,6 +210,25 @@ export function Notice({ children, onDismiss }: { children: ReactNode; onDismiss
   );
 }
 
+/* ---------- Offer ---------- */
+
+/**
+ * A one-time, optional suggestion with a yes and a "not now". Unlike a Notice it is not
+ * announced on arrival; it waits in the page like any other section.
+ */
+export function Offer({ title, children, actions }: { title: string; children: ReactNode; actions: ReactNode }) {
+  return (
+    <section className="ln-offer" aria-label={title}>
+      <Flame state="waiting" size={22} />
+      <div className="ln-offer__body">
+        <p className="ln-offer__title">{title}</p>
+        <p className="ln-offer__text">{children}</p>
+        <div className="ln-offer__actions">{actions}</div>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- Recall rating ---------- */
 
 export type RecallValue = 'forgot' | 'fuzzy' | 'solid';

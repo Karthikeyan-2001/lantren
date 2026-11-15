@@ -61,10 +61,16 @@ export interface FocusSession {
 
 export interface Settings {
   id: 'settings';
-  /** Local time for review reminders, "HH:MM" (P4). */
+  /** Review reminders on or off. Off until the user says yes. */
+  reminders: boolean;
+  /** True once the one-time offer on Today has been answered either way. */
+  reminderOfferSeen: boolean;
+  /** Local time for review reminders, "HH:MM". */
   reminderTime: string;
   graduationReviews: boolean;
+  /** One line a day in place of a reminder per review. */
   dailyDigest: boolean;
+  /** Reminders that fall inside this window wait until it ends. Null means no quiet hours. */
   quietHours: { start: string; end: string } | null;
   /** Remembered so Capture is one tap shorter next time. */
   lastTrackId: string | null;

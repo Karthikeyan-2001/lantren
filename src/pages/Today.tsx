@@ -1,14 +1,15 @@
-import { useMemo, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useLantern } from '../data/store';
 import type { Review } from '../data/types';
 import { useToday } from '../data/useToday';
 import { countWord, dayMarkLabel, lanternFlames, relativeDay, trackColour } from '../data/view';
+import { enableReminders, useReminderStatus } from '../reminders/useReminders';
 import { groupForToday } from '../scheduler';
 import { Screen } from '../ui/Screen';
 import { TopicRow } from '../ui/TopicRow';
-import { EmptyState, Notice } from '../ui/controls';
+import { Button, EmptyState, Notice, Offer } from '../ui/controls';
 
 export function TodayPage() {
   const today = useToday();
@@ -95,6 +96,7 @@ export function TodayPage() {
   return (
     <Screen kicker="today" title={title} lede={lede}>
       {notice}
+      <ReminderOffer />
 
       {groups.dueToday.length > 0 && (
         <Group title="Due today" count={groups.dueToday.length}>
@@ -123,6 +125,58 @@ export function TodayPage() {
         </EmptyState>
       )}
     </Screen>
+  );
+}
+
+/**
+ * Asked once, after the first topic exists: would a reminder help? Either answer puts
+ * the question away for good; Settings keeps the switch.
+ */
+function ReminderOffer() {
+  const reminders = useLantern((s) => s.settings.reminders);
+  const seen = useLantern((s) => s.settings.reminderOfferSeen);
+  const update = useLantern((s) => s.updateSettings);
+  const { permission } = useReminderStatus();
+  const [busy, setBusy] = useState(false);
+  const [refused, setRefused] = useState(false);
+
+  if (reminders || seen || permission === null || permission === 'unsupported') return null;
+
+  const putAway = () => void update({ reminderOfferSeen: true }).catch(() => undefined);
+  const accept = async () => {
+    setBusy(true);
+    try {
+      if ((await enableReminders()) !== 'granted') setRefused(true);
+    } catch (error) {
+      console.warn('Reminders did not switch on', error);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (refused) {
+    return (
+      <Offer title="No reminders, then" actions={<Button onClick={putAway}>Okay</Button>}>
+        Notifications are off for Lantern on this device. If you change your mind, the switch is in Settings.
+      </Offer>
+    );
+  }
+  return (
+    <Offer
+      title="Want a nudge on review days?"
+      actions={
+        <>
+          <Button variant="ember" disabled={busy} onClick={accept}>
+            Turn on reminders
+          </Button>
+          <Button variant="ghost" disabled={busy} onClick={putAway}>
+            Not now
+          </Button>
+        </>
+      }
+    >
+      One quiet reminder in the evening when a review is due. You can change the time in Settings.
+    </Offer>
   );
 }
 

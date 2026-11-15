@@ -19,8 +19,8 @@ The user is a working software engineer in Chennai (IST) upskilling toward AI en
 | P1 | Scheduler module and tests | done | `f4d93da` | Fable 5.2 (used) |
 | P2 | Data layer, Capture, Today | done | `26a6078` | Opus 5.5 (used) |
 | P3 | Review flow | done | `2872ae8` | Opus 5.5 (used) |
-| P4 | Notifications | next | | Fable 5.2 |
-| P5 | Focus mode and ambient sound | | | Fable 5.2 |
+| P4 | Notifications | done (not yet tested on a device) | see `git log` | Fable 5.2 (used) |
+| P5 | Focus mode and ambient sound | next | | Fable 5.2 |
 | P6 | Progress, tracks and weekly goals, export and import | | | Sonnet 5.5 |
 | P7 | Polish, accessibility pass, Android build | | | Opus 5.5 |
 
@@ -195,6 +195,19 @@ Why each phase gets its model:
 - Settings writes are optimistic in the store and rolled back if Dexie fails.
 - The store's `lastCapture` became a generic `notice` string used by capture and snooze. Notices say "today", "tomorrow" or "on Wed 18 Nov".
 - New components: `RecallRating`, `Toggle` (checkbox with `role="switch"`), tappable `TopicRow` (`to` prop, stretched link). All on the style-guide page. Theme choice also appears in Settings.
+
+### P4
+- Code lives in `src/reminders`: `plan.ts` (pure planner in wall-clock terms, no Date), `sync.ts` (plan to local instants, one sync at a time), `port.ts` (the only Capacitor Local Notifications caller), `useReminders.ts` (hooks and wiring).
+- Reminders are off until the user says yes. Today offers once (`reminderOfferSeen`); the switch is in Settings. Permission is asked only at that moment.
+- Digest off: each open review reminds once on its due day; reviews whose moment has passed share one "waiting for you" nudge at the next reminder time. Digest on: one line a day instead, planned 7 days ahead.
+- A reminder time inside quiet hours waits until they end, even the next morning. Settings says so.
+- Estimates: 4 minutes a review, 10 for a `dsa-problem`. Plan capped at 48, per-review horizon 30 days.
+- Every sync cancels all pending, clears the tray and schedules the fresh plan. Runs on topic, review and reminder-setting changes, local date or timezone change (checked each minute) and every return to the foreground.
+- Exact alarms: plugin 8.3 opens a system settings screen on every `schedule` if exact is wanted without permission, so `isExactNotification` is set only when already granted; otherwise inexact with `allowWhileIdle`. Settings has an "Allow exact timing" button.
+- Known limit: a timezone change while the app is closed is corrected the next time it opens.
+- Web: reminders only fire while the app is open; Android Chrome cannot show them at all (Settings says so).
+- New component: `Offer`. Time fields are `TextField type="time"`. Both on the style-guide page.
+- Left for P7: notification small icon, and testing all of this on a real device.
 
 ## Environment notes
 

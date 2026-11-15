@@ -13,6 +13,7 @@ import {
   Choice,
   EmptyState,
   Notice,
+  Offer,
   Pill,
   ProgressRing,
   RecallRating,
@@ -117,6 +118,7 @@ export function StyleGuidePage() {
   const [remaining, setRemaining] = useState(70);
   const [rated, setRated] = useState<string>('nothing yet');
   const [toggled, setToggled] = useState(false);
+  const [time, setTime] = useState('19:30');
   const minutes = Math.round((remaining / 100) * 25);
 
   return (
@@ -275,6 +277,27 @@ export function StyleGuidePage() {
 
       <Section title="Notice" note="A one-line confirmation. Polite to screen readers, gone when dismissed.">
         <Notice onDismiss={() => undefined}>“Closures” is lit. Back on Wed 18 Nov and Sat 21 Nov.</Notice>
+      </Section>
+
+      <Section title="Offer" note="A one-time suggestion with a yes and a not now. Asked once, never repeated.">
+        <Offer
+          title="Want a nudge on review days?"
+          actions={
+            <>
+              <Button variant="ember">Turn on reminders</Button>
+              <Button variant="ghost">Not now</Button>
+            </>
+          }
+        >
+          One quiet reminder in the evening when a review is due.
+        </Offer>
+      </Section>
+
+      <Section title="Time field" note="The device’s own time picker, set in the number face.">
+        <div className="ln-field__row">
+          <TextField label="Remind me at" type="time" value={time} onChange={(e) => setTime(e.target.value)} />
+          <TextField label="Quiet until" type="time" defaultValue="07:00" />
+        </div>
       </Section>
 
       <Section title="Progress" note="A ring that fills slowly. No streak fireworks.">

@@ -11,6 +11,7 @@ import { ReviewPage } from './pages/Review';
 import { SettingsPage } from './pages/Settings';
 import { StyleGuidePage } from './pages/StyleGuide';
 import { TodayPage } from './pages/Today';
+import { useReminderSync } from './reminders/useReminders';
 import { Nav } from './ui/Nav';
 
 /* Ionic: structure only. No Ionic palettes, typography or component themes. */
@@ -41,6 +42,12 @@ function useStartup() {
   }, []);
 }
 
+/** Lives inside the router so a tapped reminder can open its review. Draws nothing. */
+function Reminders() {
+  useReminderSync();
+  return null;
+}
+
 const App: React.FC = () => {
   useStartup();
   return (
@@ -57,6 +64,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Navigate to="/today" replace />} />
         </IonRouterOutlet>
         <Nav />
+        <Reminders />
       </IonReactRouter>
       <div className="ln-grain" aria-hidden="true" />
     </IonApp>

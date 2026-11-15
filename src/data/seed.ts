@@ -24,6 +24,8 @@ export function starterTracks(now: Date): Track[] {
 
 export const DEFAULT_SETTINGS: Settings = {
   id: 'settings',
+  reminders: false,
+  reminderOfferSeen: false,
   reminderTime: '19:30',
   graduationReviews: false,
   dailyDigest: false,
