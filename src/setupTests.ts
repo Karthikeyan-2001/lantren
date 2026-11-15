@@ -9,9 +9,9 @@ afterEach(() => {
 });
 
 // jsdom doesn't implement matchMedia, which Ionic uses for platform and dark mode checks.
-window.matchMedia =
-  window.matchMedia ||
-  function (query: string): MediaQueryList {
+// Pure-logic tests run in the node environment, where there is no window to patch.
+if (typeof window !== 'undefined' && !window.matchMedia) {
+  window.matchMedia = function (query: string): MediaQueryList {
     return {
       matches: false,
       media: query,
@@ -23,3 +23,4 @@ window.matchMedia =
       dispatchEvent: () => false,
     };
   };
+}

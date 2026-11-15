@@ -7,8 +7,8 @@ A quiet focus-and-study app built around the 1-4-7 spaced revision method. You l
 | Phase | What | State |
 | --- | --- | --- |
 | P0 | Project setup, design tokens, style-guide page | done |
-| P1 | Scheduler module and tests | next |
-| P2 | Data layer, Capture, Today | |
+| P1 | Scheduler module and tests | done |
+| P2 | Data layer, Capture, Today | next |
 | P3 | Review flow | |
 | P4 | Notifications | |
 | P5 | Focus mode and ambient sound | |
@@ -84,6 +84,7 @@ Then run on a device from Android Studio, or build an APK with Build > Build APK
 
 ```
 src/theme     tokens.css (palette, type, shape, motion), base.css, theme switch, contrast test
+src/scheduler pure 1-4-7 rules (config.ts holds REVIEW_OFFSETS), local-date helpers, tests
 src/ui        Lantern's own components: Flame, Lantern, Button, fields, Choice, ProgressRing, Nav, Screen
 src/pages     screens; StyleGuide.tsx shows every token and component
 scripts       make-icons.mjs draws the app icons
