@@ -1,0 +1,109 @@
+/*
+ * Lantern design tokens.
+ * Raw palette first, then semantic roles per theme. Components only ever use
+ * the semantic roles. tokens.test.ts checks every text pair is at least 4.5:1.
+ */
+
+:root {
+  /* raw palette */
+  --ink: #14110f;
+  --soot: #1e1a17;
+  --parchment: #f3e9d8;
+  --ember: #ff7a3d;
+  --moss: #7fa38a;
+  --dusk: #6c7ba8;
+  --ash: #8c8279;
+
+  /* type */
+  --font-display: 'Fraunces Variable', 'Iowan Old Style', 'Palatino Linotype', serif;
+  --font-body: 'Source Sans 3 Variable', 'Gill Sans', 'Trebuchet MS', sans-serif;
+  --font-mono: 'DM Mono', ui-monospace, 'Cascadia Mono', monospace;
+
+  --fs-display: 2.5rem;
+  --fs-h1: 2rem;
+  --fs-h2: 1.5rem;
+  --fs-h3: 1.1875rem;
+  --fs-body: 1.0625rem;
+  --fs-small: 0.9375rem;
+  --fs-micro: 0.8125rem;
+  --fs-timer: clamp(3.5rem, 20vw, 6.5rem);
+
+  /* space */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 72px;
+  --gutter: 20px;
+  --touch: 44px;
+
+  /* shape: lantern windows */
+  --r-arch: 999px 999px 20px 20px;
+  --r-pill: 999px;
+  --r-soft: 20px;
+  --hairline-w: 1px;
+
+  /* motion: slow and calm */
+  --dur-quick: 250ms;
+  --dur-calm: 400ms;
+  --dur-slow: 600ms;
+  --ease-calm: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-settle: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* layout */
+  --nav-h: 64px;
+  --content-max: 560px;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: var(--ink);
+  --surface: var(--soot);
+  --surface-2: #28231f;
+  --text: var(--parchment);
+  --text-muted: #a69c91;
+  --accent: var(--ember);
+  --accent-text: var(--ember);
+  --on-accent: var(--ink);
+  --moss-text: var(--moss);
+  --dusk-text: #97a4cb;
+  --hairline: rgba(243, 233, 216, 0.14);
+  --hairline-strong: rgba(243, 233, 216, 0.28);
+  --glow: rgba(255, 122, 61, 0.32);
+  --glow-steady: rgba(255, 190, 120, 0.3);
+  --flame-core: #ffd9a8;
+  --grain-opacity: 0.04;
+}
+
+:root[data-theme='paper'] {
+  color-scheme: light;
+  --bg: var(--parchment);
+  --surface: #faf4e8;
+  --surface-2: #eadfcb;
+  --text: var(--ink);
+  --text-muted: #5f564d;
+  --accent: var(--ember);
+  --accent-text: #a23d17;
+  --on-accent: var(--ink);
+  --moss-text: #3c5d46;
+  --dusk-text: #434f78;
+  --hairline: rgba(20, 17, 15, 0.16);
+  --hairline-strong: rgba(20, 17, 15, 0.34);
+  --glow: rgba(255, 122, 61, 0.26);
+  --glow-steady: rgba(226, 150, 70, 0.26);
+  --flame-core: #ffe6c4;
+  --grain-opacity: 0.035;
+}
+
+/* Track colours: quiet, earthy, all readable as a dot or hairline on both themes. */
+:root {
+  --track-ember: #ff7a3d;
+  --track-moss: #7fa38a;
+  --track-dusk: #6c7ba8;
+  --track-wheat: #d6ae62;
+  --track-clay: #c4847a;
+  --track-lichen: #6fa39f;
+}

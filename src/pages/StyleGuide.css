@@ -1,0 +1,122 @@
+.sg-back {
+  align-self: flex-start;
+  margin: calc(-1 * var(--sp-4)) 0 calc(-1 * var(--sp-4)) calc(-1 * var(--sp-3));
+}
+
+.sg-swatches,
+.sg-flames,
+.sg-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sg-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: var(--sp-3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  color: var(--text-muted);
+}
+.sg-swatches li {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.sg-swatch {
+  height: 84px;
+  border-radius: var(--r-arch);
+  border: var(--hairline-w) solid var(--hairline-strong);
+}
+
+.sg-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-small);
+}
+.sg-table th,
+.sg-table td {
+  padding: var(--sp-2) var(--sp-1);
+  text-align: left;
+  font-weight: 500;
+  border-bottom: var(--hairline-w) solid var(--hairline);
+}
+.sg-table thead th {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  color: var(--text-muted);
+}
+
+.sg-type {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.sg-display {
+  font-family: var(--font-display);
+  font-size: var(--fs-display);
+  font-weight: 380;
+  font-variation-settings: 'SOFT' 100;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.sg-flames {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-3);
+  padding: var(--sp-5) 0 var(--sp-2);
+}
+.sg-flames li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  text-align: center;
+}
+
+.sg-row {
+  display: flex;
+  gap: var(--sp-4);
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.sg-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.sg-shape {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  border: var(--hairline-w) solid var(--hairline-strong);
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  color: var(--text-muted);
+}
+.sg-shape--arch {
+  height: 120px;
+  border-radius: var(--r-arch);
+}
+.sg-shape--pill {
+  height: 44px;
+  border-radius: var(--r-pill);
+}
+.sg-shape--soft {
+  height: 84px;
+  border-radius: var(--r-soft);
+}
+
+.sg-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.sg-list em {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--accent-text);
+}
