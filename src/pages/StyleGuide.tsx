@@ -2,11 +2,14 @@ import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
+import { heatmap } from '../progress/stats';
+import { addDays, startOfWeek, toLocalDate } from '../scheduler';
 import { contrastRatio, parseColour } from '../theme/contrast';
 import { useTheme, type ThemeChoice } from '../theme/theme';
 import { Flame } from '../ui/Flame';
 import { Hearth } from '../ui/Hearth';
 import { Lantern } from '../ui/Lantern';
+import { Heatmap, Meter, Stat, WeekCard } from '../ui/Progress';
 import { Screen } from '../ui/Screen';
 import { TopicRow } from '../ui/TopicRow';
 import {
@@ -38,6 +41,18 @@ const TRACKS = [
   ['System design', 'lichen'],
   ['React and Ionic', 'clay'],
 ] as const;
+
+/** Twelve sample weeks of study days, in a pattern that is the same every time. */
+const SAMPLE_HEAT = (() => {
+  const today = toLocalDate(new Date());
+  const start = addDays(startOfWeek(today), -77);
+  const activity = new Map<ReturnType<typeof toLocalDate>, number>();
+  for (let i = 0; i < 84; i++) {
+    const n = (i * 5 + Math.floor(i / 7) * 3) % 7;
+    if (n < 4) activity.set(addDays(start, i), n === 3 ? 3 : n === 2 ? 2 : 1);
+  }
+  return heatmap(activity, today);
+})();
 
 const THEMES: readonly { value: ThemeChoice; label: string }[] = [
   { value: 'dark', label: 'Dark' },
@@ -327,6 +342,50 @@ export function StyleGuidePage() {
             <span className="ln-small ln-muted">of 120</span>
           </ProgressRing>
         </div>
+      </Section>
+
+      <Section
+        title="Heatmap, meters and stats"
+        note="A calm record. Days are lit or not; a meter stops at its target; nothing is ranked."
+      >
+        <Heatmap
+          cells={SAMPLE_HEAT.cells}
+          weeks={SAMPLE_HEAT.weeks}
+          label="Sample: 41 study days in the last 12 weeks."
+        />
+        <div>
+          <div className="ln-meter-row">
+            <div className="ln-meter-row__head" aria-hidden="true">
+              <span>JavaScript deep dive</span>
+              <span className="ln-muted ln-mono">1 h 40 min of 3 h</span>
+            </div>
+            <Meter value={100} max={180} colour="var(--track-wheat)" label="JavaScript deep dive: 1 h 40 min of 3 h" />
+          </div>
+          <div className="ln-meter-row">
+            <div className="ln-meter-row__head" aria-hidden="true">
+              <span>System design</span>
+              <span className="ln-muted ln-mono">2 h of 2 h</span>
+            </div>
+            <Meter value={150} max={120} colour="var(--track-clay)" label="System design: 2 h 30 min of 2 h" />
+          </div>
+        </div>
+        <dl className="ln-stats">
+          <Stat value="75%" label="Reviews done" note="6 of 8 reviews done in the last four weeks." />
+          <Stat value={12} label="Locked in" note="topics are yours now." />
+        </dl>
+        <WeekCard
+          to="/styleguide"
+          minutes={150}
+          targetMinutes={570}
+          line="2 h 30 min of 9 h 30 min this week"
+          centre={
+            <>
+              <span className="ln-mono">2.5</span>
+              <br />
+              <span className="ln-small ln-muted">h</span>
+            </>
+          }
+        />
       </Section>
 
       <Section title="Select and slider" note="The device’s own picker and slider, for one of many and for how much.">

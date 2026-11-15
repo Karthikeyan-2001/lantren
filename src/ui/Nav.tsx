@@ -35,6 +35,15 @@ const DESTINATIONS = [
   },
 ] as const;
 
+/** Which destination a screen sits under: Progress is reached from Today; Tracks and Settings from Library. */
+const SUBPAGES: Record<string, readonly string[]> = {
+  '/today': ['/progress'],
+  '/library': ['/tracks', '/settings'],
+};
+
+const belongsTo = (destination: string, pathname: string): boolean =>
+  pathname.startsWith(destination) || (SUBPAGES[destination] ?? []).some((p) => pathname.startsWith(p));
+
 /**
  * Three destinations, plus the floating capture lantern. `hidden` takes all of it away,
  * for the one screen that is meant to be the only thing on the phone: a running focus session.
@@ -51,11 +60,7 @@ export function Nav({ hidden = false }: { hidden?: boolean }) {
             to={d.to}
             replace
             className="ln-nav__link"
-            aria-current={
-              pathname.startsWith(d.to) || (d.to === '/library' && pathname.startsWith('/settings'))
-                ? 'page'
-                : undefined
-            }
+            aria-current={belongsTo(d.to, pathname) ? 'page' : undefined}
           >
             {d.icon}
             {d.label}

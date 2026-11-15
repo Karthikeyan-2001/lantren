@@ -12,8 +12,8 @@ A quiet focus-and-study app built around the 1-4-7 spaced revision method. You l
 | P3 | Review flow | done |
 | P4 | Notifications | done |
 | P5 | Focus mode and ambient sound | done |
-| P6 | Progress, tracks and weekly goals, export and import | next |
-| P7 | Polish, accessibility pass, Android build | |
+| P6 | Progress, tracks and weekly goals, export and import | done |
+| P7 | Polish, accessibility pass, Android build | next |
 
 ## Stack and decisions
 
@@ -22,8 +22,9 @@ A quiet focus-and-study app built around the 1-4-7 spaced revision method. You l
 - **State:** Zustand (from P2). **Storage:** Dexie over IndexedDB (from P2), one code path for Android and the PWA.
 - **Fonts:** Fraunces (headings), Source Sans 3 (body), DM Mono (numbers), self-hosted through `@fontsource` so they work offline.
 - **Focus:** the timer follows the wall clock; ambient sound (rain, brown noise, soft hum) is synthesised with the Web Audio API, so there are no audio files; the screen is kept awake with `@capacitor-community/keep-awake`.
+- **Progress and data:** a gentle streak (one rest day a week), a 12-week heatmap and weekly focus against per-track targets are computed on the device from what is stored. Everything can be saved as one JSON backup, restored, or deleted from Settings.
 - **PWA:** `vite-plugin-pwa` precaches the whole app for airplane mode.
-- **Tests:** Vitest for unit tests, Playwright for end-to-end checks of capture, review, settings and focus sessions.
+- **Tests:** Vitest for unit tests, Playwright for end-to-end checks of capture, review, settings, focus sessions, progress, tracks and backups.
 
 ## Setup
 
@@ -65,7 +66,7 @@ npm run lint
 npm run build
 ```
 
-`npm run test:e2e` runs the Playwright smoke test (first run `npx playwright install chromium`).
+`npm run test:e2e` runs the Playwright smoke test (first run `npx playwright install chromium`). It expects the dev server on port 5173; set `E2E_PORT` to use another.
 
 ## Android build
 
@@ -89,6 +90,7 @@ src/scheduler pure 1-4-7 rules (config.ts holds REVIEW_OFFSETS), local-date help
 src/data      model, Dexie schema, repository, Zustand store
 src/reminders reminder planning and scheduling (Capacitor Local Notifications)
 src/focus     focus timer rules, ambient sound, screen wake lock
+src/progress  streak, heatmap, weekly focus and review statistics (pure)
 src/ui        Lantern's own components: Flame, Lantern, Hearth, Button, fields, Choice, ProgressRing, Nav, Screen
 src/pages     screens; StyleGuide.tsx shows every token and component
 scripts       make-icons.mjs draws the app icons

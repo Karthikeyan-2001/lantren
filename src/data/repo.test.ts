@@ -5,13 +5,16 @@ import { localDate, toLocalDate } from '../scheduler';
 import { openDb, type LanternDB } from './db';
 import {
   InvalidTopicError,
+  InvalidTrackError,
   ReviewNotFoundError,
+  addTrack,
   loadAll,
   recordReview,
   saveFocusSession,
   saveTopic,
   snoozeReviewById,
   updateSettings,
+  updateTrack,
 } from './repo';
 import { createLanternStore } from './store';
 import type { FocusSession, TopicInput } from './types';
@@ -322,5 +325,80 @@ describe('focus sessions', () => {
     expect(settings.focusMinutes).toBe(25);
     expect(settings.focusSound).toBe('off');
     expect(settings.focusChime).toBe(true);
+  });
+});
+
+describe('tracks', () => {
+  const base = { name: '  Rust for fun ', colour: 'clay' as const, weeklyTargetMinutes: 90 };
+
+  test('a new track goes after the others, trimmed, with a concept default', async () => {
+    const db = freshDb();
+    const track = await addTrack(db, base, NOW);
+    expect(track).toMatchObject({
+      name: 'Rust for fun',
+      colour: 'clay',
+      weeklyTargetMinutes: 90,
+      order: 6,
+      defaultKind: 'concept',
+      archived: false,
+    });
+    expect((await loadAll(db)).tracks.at(-1)).toEqual(track);
+  });
+
+  test('a track can be renamed, recoloured and retargeted, and topics stay with it', async () => {
+    const db = freshDb();
+    const { topic } = await saveTopic(db, input(), NOW);
+    const edited = await updateTrack(db, 'track-js', { name: ' JS ', colour: 'dusk', weeklyTargetMinutes: 0 });
+    expect(edited).toMatchObject({ name: 'JS', colour: 'dusk', weeklyTargetMinutes: 0, archived: false });
+    expect((await loadAll(db)).topics.find((t) => t.id === topic.id)?.trackId).toBe('track-js');
+  });
+
+  test('refuses an empty or very long name, a bad colour and a silly target', async () => {
+    const db = freshDb();
+    await expect(addTrack(db, { ...base, name: '   ' }, NOW)).rejects.toBeInstanceOf(InvalidTrackError);
+    await expect(addTrack(db, { ...base, name: 'x'.repeat(61) }, NOW)).rejects.toBeInstanceOf(InvalidTrackError);
+    await expect(addTrack(db, { ...base, colour: 'neon' as never }, NOW)).rejects.toBeInstanceOf(InvalidTrackError);
+    await expect(addTrack(db, { ...base, weeklyTargetMinutes: -5 }, NOW)).rejects.toBeInstanceOf(InvalidTrackError);
+    await expect(addTrack(db, { ...base, weeklyTargetMinutes: 2401 }, NOW)).rejects.toBeInstanceOf(InvalidTrackError);
+    await expect(addTrack(db, { ...base, weeklyTargetMinutes: 30.5 }, NOW)).rejects.toBeInstanceOf(InvalidTrackError);
+    await expect(updateTrack(db, 'track-js', { name: '' })).rejects.toBeInstanceOf(InvalidTrackError);
+    await expect(updateTrack(db, 'track-nowhere', { name: 'x' })).rejects.toBeInstanceOf(InvalidTrackError);
+    expect((await loadAll(db)).tracks).toHaveLength(6);
+  });
+
+  test('a track can be put away and brought back, but the last one in view stays', async () => {
+    const db = freshDb();
+    const ids = (await loadAll(db)).tracks.map((t) => t.id);
+    for (const id of ids.slice(1)) await updateTrack(db, id, { archived: true });
+    await expect(updateTrack(db, ids[0]!, { archived: true })).rejects.toThrow('Keep at least one track in view.');
+    expect((await loadAll(db)).tracks.filter((t) => !t.archived).map((t) => t.id)).toEqual([ids[0]]);
+    expect(await updateTrack(db, ids[1]!, { archived: false })).toMatchObject({ archived: false });
+  });
+
+  test('the store keeps tracks in step with what was saved', async () => {
+    const store = createLanternStore(freshDb());
+    await store.getState().load();
+    const added = await store.getState().addTrack(base);
+    await store.getState().editTrack(added.id, { name: 'Rust' });
+    await store.getState().editTrack('track-dsa', { archived: true });
+    const { tracks } = store.getState();
+    expect(tracks.find((t) => t.id === added.id)?.name).toBe('Rust');
+    expect(tracks.find((t) => t.id === 'track-dsa')?.archived).toBe(true);
+    expect(tracks).toHaveLength(7);
+  });
+
+  test('the store restores a backup and deletes everything', async () => {
+    const store = createLanternStore(freshDb());
+    await store.getState().load();
+    await store.getState().capture(input());
+    const snapshot = await loadAll(freshDb());
+    await store.getState().restore({ ...snapshot, focusSessions: [] });
+    expect(store.getState().topics).toEqual([]);
+    await store.getState().capture(input());
+    await store.getState().wipe();
+    expect(store.getState().topics).toEqual([]);
+    expect(store.getState().reviews).toEqual([]);
+    expect(store.getState().notice).toBeNull();
+    expect(store.getState().tracks).toHaveLength(6);
   });
 });

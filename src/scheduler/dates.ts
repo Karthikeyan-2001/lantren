@@ -73,6 +73,17 @@ export function daysBetween(from: LocalDate, to: LocalDate): number {
   return toDayNumber(to) - toDayNumber(from);
 }
 
+/** Which day of the week a date is, counting Monday as 0 and Sunday as 6. */
+export function weekdayIndex(date: LocalDate): number {
+  // 1970-01-01 was a Thursday (index 3).
+  return (((toDayNumber(date) + 3) % 7) + 7) % 7;
+}
+
+/** The Monday of the week a date falls in. Weeks run Monday to Sunday. */
+export function startOfWeek(date: LocalDate): LocalDate {
+  return addDays(date, -weekdayIndex(date));
+}
+
 export function compareDates(a: LocalDate, b: LocalDate): number {
   return a < b ? -1 : a > b ? 1 : 0;
 }

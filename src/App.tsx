@@ -8,10 +8,12 @@ import { useFocus, useFocusLifecycle } from './focus/useFocus';
 import { CapturePage } from './pages/Capture';
 import { FocusPage } from './pages/Focus';
 import { LibraryPage } from './pages/Library';
+import { ProgressPage } from './pages/Progress';
 import { ReviewPage } from './pages/Review';
 import { SettingsPage } from './pages/Settings';
 import { StyleGuidePage } from './pages/StyleGuide';
 import { TodayPage } from './pages/Today';
+import { TracksPage } from './pages/Tracks';
 import { useReminderSync } from './reminders/useReminders';
 import { Nav } from './ui/Nav';
 
@@ -68,6 +70,8 @@ const App: React.FC = () => {
           <Route path="/library" element={<LibraryPage />} />
           <Route path="/capture" element={<CapturePage />} />
           <Route path="/review/:reviewId" element={<ReviewPage />} />
+          <Route path="/progress" element={<ProgressPage />} />
+          <Route path="/tracks" element={<TracksPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/styleguide" element={<StyleGuidePage />} />
           <Route path="/" element={<Navigate to="/today" replace />} />

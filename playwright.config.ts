@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const baseURL = 'http://localhost:5173';
+// Set E2E_PORT to test against a dev server on another port (for example when 5173 is taken).
+const port = process.env.E2E_PORT ?? '5173';
+const baseURL = `http://localhost:${port}`;
 
 export default defineConfig({
   testDir: './e2e',
@@ -19,7 +21,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run dev -- --port 5173 --strictPort',
+    command: `npm run dev -- --port ${port} --strictPort`,
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

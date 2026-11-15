@@ -21,8 +21,8 @@ The user is a working software engineer in Chennai (IST) upskilling toward AI en
 | P3 | Review flow | done | `2872ae8` | Opus 5.5 (used) |
 | P4 | Notifications | done (not yet run on a device) | `5d17047` | Fable 5.2 (used) |
 | P5 | Focus mode and ambient sound | done (sound and screen lock not yet tried on a phone) | `719b607` | Fable 5.2 (used) |
-| P6 | Progress, tracks and weekly goals, export and import | next | | Sonnet 5.5 |
-| P7 | Polish, accessibility pass, Android build | | | Opus 5.5 |
+| P6 | Progress, tracks and weekly goals, export and import | done (export not yet tried on a phone) | `HASH` | Sonnet 5.5 (used) |
+| P7 | Polish, accessibility pass, Android build | next | | Opus 5.5 |
 
 ## Which model to use
 
@@ -95,7 +95,7 @@ Why each phase gets its model:
 3. A 5 or 15 minute break is offered after a session, then a gentle "Ready when you are". Finishing leaves a warm glow, never confetti.
 4. Ambient sound generated with the Web Audio API (rain, brown noise, soft hum), volume control, a sleep fade and an optional end chime.
 
-### P6 Progress, tracks and goals, export and import
+### P6 Progress, tracks and goals, export and import (done)
 
 1. Track editing with colours and a weekly focus target per track; a calm progress ring on Today.
 2. 12-week heatmap of study days, weekly focus minutes per track against target, review completion rate, count of locked-in topics.
@@ -114,7 +114,7 @@ Why each phase gets its model:
 - `npm run dev` runs on http://localhost:5173. `npm run dev:phone` exposes it on the LAN for phone testing.
 - `npm run test:unit` (Vitest), `npm run lint` (ESLint, e2e typecheck, Prettier check), `npm run build` (tsc then Vite).
 - `npm run lint:fix` formats and fixes. Run it before committing.
-- `npm run test:e2e` is the Playwright smoke test (needs `npx playwright install chromium` once).
+- `npm run test:e2e` is the Playwright smoke test (needs `npx playwright install chromium` once). It uses port 5173; set `E2E_PORT` to test against a dev server on another port.
 
 ## Rules that must hold
 
@@ -229,6 +229,22 @@ Why each phase gets its model:
 - New components: `Hearth`, `SelectField`, `RangeField`, and `Nav`'s `hidden` prop. All on the style-guide page. `Placeholders.tsx` is gone.
 - Playwright covers a full session (park, pause, finish, break) and an early stop, using its fake clock.
 - Left for P7: hear the three sounds on a phone speaker and adjust their levels, check that sound and the wake lock behave on Android when the screen is turned off, hide the status bar during a session.
+
+### P6
+- Code: `src/progress` (`stats.ts` pure maths over stored data, `copy.ts` wording and unit helpers), `src/data/backup.ts` (backup format, pure), `src/data/files.ts` (the only Filesystem/Share caller), `src/pages/Progress.tsx`, `Tracks.tsx`, `DataSection.tsx` (inside Settings), `src/ui/Progress.tsx` (`Heatmap`, `Meter`, `Stat`, `WeekCard`). `weekdayIndex` and `startOfWeek` were added to `src/scheduler/dates.ts` with tests; weeks run Monday to Sunday.
+- Screens: `/progress` is reached from the ring on Today and from Library, and sits under Today in the navigation. `/tracks` and `/settings` sit under Library. Still three destinations.
+- A study day is any local day with a topic studied, a review completed or a focus session of at least 1 focused minute. Backdated captures count on the day studied.
+- The streak counts study days in a row. Each Monday-to-Sunday week has one rest day: the first missed day while a streak is running is forgiven (and is not counted as a study day), a second one in the same week ends it. A rest day is only spent when there is a running streak to protect, and today never counts against it until it is over. The rest day is automatic; there is nothing to tap. Copy never says lost, broke or missed.
+- Heatmap: 12 whole weeks ending with this one, Monday at the top, three warm levels (1, 2, 3 or more things done), future days a dashed outline. One picture to a screen reader, described by a sentence.
+- Weekly focus is Monday to today, summed from `focusedMinutes` by the day each session started, per track against its target. Time on put-away tracks counts toward the total but not the targets. The Today ring is the total against all targets; with no targets it stays empty and the line states the time.
+- Review completion: of the reviews that came due in the last 28 days, the share that were done (late counts). A review due today and still open is not counted. Reviews of archived topics are ignored. Locked-in is a plain count.
+- Tracks: name (up to 60 letters), one of the six colours, a weekly target in hours (0 to 40, 0 means none) stored as minutes. Tracks are put away, never deleted, so topics keep their track; at least one track always stays in view. Reordering is not offered. New tracks get `concept` as their default kind and the first colour not in use.
+- Backup: one JSON file, `lantern-backup-YYYY-MM-DD.json`, `{ app: 'lantern', version: 1, exportedAt, tracks, topics, reviews, focusSessions, settings }`. Reading it validates every record and refuses the whole file, with a kind reason and nothing changed, on any problem; settings are read field by field and fall back to defaults. A focus session whose track or topic is missing keeps its minutes and loses the link.
+- Restore replaces everything on the device (one transaction, all or nothing) after a confirmation that shows what the file holds. There is no merge. Reminders re-plan by themselves because the store changes.
+- Delete everything needs the word "delete" typed, then returns to a first-run state: starter tracks and default settings (a running focus session is cleared too). The theme choice is left alone. No red styling.
+- Saving: on Android the file is written to the cache and handed to the share sheet (`@capacitor/filesystem`, `@capacitor/share`), because a WebView cannot download files; in a browser it is a normal download. Choosing a file uses a plain file input.
+- Playwright covers the Today ring and Progress, track editing, and a full backup, delete and restore round trip.
+- Left for P7: try Save a backup and Restore on a real Android device (share sheet, file picker, and where the file ends up).
 
 ## Environment notes
 

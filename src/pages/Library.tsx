@@ -86,6 +86,12 @@ export function LibraryPage() {
         </section>
       )}
 
+      <Link to="/progress" className="ln-btn ln-btn--quiet ln-btn--block">
+        Your progress
+      </Link>
+      <Link to="/tracks" className="ln-btn ln-btn--quiet ln-btn--block">
+        Tracks
+      </Link>
       <Link to="/settings" className="ln-btn ln-btn--quiet ln-btn--block">
         Settings
       </Link>

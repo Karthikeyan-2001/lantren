@@ -4,13 +4,19 @@ import { toLocalDate, type Recall } from '../scheduler';
 
 import { db as defaultDb, type LanternDB } from './db';
 import {
+  addTrack,
   loadAll,
   recordReview,
+  replaceAll,
   saveFocusSession,
   saveTopic,
   snoozeReviewById,
   updateSettings,
+  updateTrack,
+  wipeAll,
   type ReviewOutcome,
+  type Snapshot,
+  type TrackInput,
 } from './repo';
 import { DEFAULT_SETTINGS } from './seed';
 import type { FocusSession, Review, Settings, Topic, TopicInput, Track } from './types';
@@ -31,6 +37,12 @@ interface LanternState {
   review: (reviewId: string, recall: Recall) => Promise<ReviewOutcome>;
   snooze: (reviewId: string) => Promise<Review>;
   logFocus: (session: FocusSession) => Promise<void>;
+  addTrack: (input: TrackInput) => Promise<Track>;
+  editTrack: (id: string, patch: Partial<TrackInput> & { archived?: boolean }) => Promise<Track>;
+  /** Replaces everything on the device with a backup's contents. */
+  restore: (data: Snapshot) => Promise<void>;
+  /** Deletes everything and starts over as on first run. */
+  wipe: () => Promise<void>;
   updateSettings: (patch: Partial<Omit<Settings, 'id'>>) => Promise<void>;
   dismissNotice: () => void;
 }
@@ -94,6 +106,28 @@ export function createLanternStore(db: LanternDB) {
     logFocus: async (session) => {
       const stored = await saveFocusSession(db, session);
       set((s) => ({ focusSessions: [...s.focusSessions.filter((f) => f.id !== stored.id), stored] }));
+    },
+
+    addTrack: async (input) => {
+      const track = await addTrack(db, input, new Date());
+      set((s) => ({ tracks: [...s.tracks, track] }));
+      return track;
+    },
+
+    editTrack: async (id, patch) => {
+      const track = await updateTrack(db, id, patch);
+      set((s) => ({ tracks: replaceById(s.tracks, track) }));
+      return track;
+    },
+
+    restore: async (data) => {
+      await replaceAll(db, data);
+      set({ ...(await loadAll(db)), status: 'ready', notice: null });
+    },
+
+    wipe: async () => {
+      await wipeAll(db, new Date());
+      set({ ...(await loadAll(db)), status: 'ready', notice: null });
     },
 
     // Optimistic, so a switch moves the moment it is tapped; put back if the write fails.

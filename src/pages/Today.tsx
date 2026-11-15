@@ -5,8 +5,11 @@ import { useLantern } from '../data/store';
 import type { Review } from '../data/types';
 import { useToday } from '../data/useToday';
 import { countWord, dayMarkLabel, lanternFlames, relativeDay, trackColour } from '../data/view';
+import { hoursText, weekLine } from '../progress/copy';
+import { weeklyFocus } from '../progress/stats';
 import { enableReminders, useReminderStatus } from '../reminders/useReminders';
 import { groupForToday } from '../scheduler';
+import { WeekCard } from '../ui/Progress';
 import { Screen } from '../ui/Screen';
 import { TopicRow } from '../ui/TopicRow';
 import { Button, EmptyState, Notice, Offer } from '../ui/controls';
@@ -17,6 +20,7 @@ export function TodayPage() {
   const topics = useLantern((s) => s.topics);
   const reviews = useLantern((s) => s.reviews);
   const tracks = useLantern((s) => s.tracks);
+  const sessions = useLantern((s) => s.focusSessions);
   const noticeText = useLantern((s) => s.notice);
   const dismiss = useLantern((s) => s.dismissNotice);
 
@@ -29,6 +33,23 @@ export function TodayPage() {
     });
     return groupForToday(live, today);
   }, [reviews, topicById, today]);
+
+  const week = useMemo(() => weeklyFocus(sessions, tracks, today), [sessions, tracks, today]);
+  const weekCard = (
+    <WeekCard
+      to="/progress"
+      minutes={week.totalMinutes}
+      targetMinutes={week.totalTargetMinutes}
+      line={weekLine(week)}
+      centre={
+        <>
+          <span className="ln-mono">{hoursText(week.totalMinutes)}</span>
+          <br />
+          <span className="ln-small ln-muted">h</span>
+        </>
+      }
+    />
+  );
 
   const notice = noticeText && <Notice onDismiss={dismiss}>{noticeText}</Notice>;
 
@@ -62,6 +83,7 @@ export function TodayPage() {
             Capture a topic
           </Link>
         </EmptyState>
+        {weekCard}
       </Screen>
     );
   }
@@ -124,6 +146,8 @@ export function TodayPage() {
           </Link>
         </EmptyState>
       )}
+
+      {weekCard}
     </Screen>
   );
 }

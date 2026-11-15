@@ -1,7 +1,17 @@
 // @vitest-environment node
 import { describe, expect, test } from 'vitest';
 
-import { addDays, compareDates, daysBetween, isLocalDate, laterOf, localDate, toLocalDate } from './dates';
+import {
+  addDays,
+  compareDates,
+  daysBetween,
+  isLocalDate,
+  laterOf,
+  localDate,
+  startOfWeek,
+  toLocalDate,
+  weekdayIndex,
+} from './dates';
 
 const d = localDate;
 
@@ -108,5 +118,27 @@ describe('what date is it here, now', () => {
     const now = new Date('2026-11-15T12:00:00Z');
     const deviceZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     expect(toLocalDate(now)).toBe(toLocalDate(now, deviceZone));
+  });
+});
+
+describe('weeks run Monday to Sunday', () => {
+  test('weekday index counts Monday as 0', () => {
+    expect(weekdayIndex(d('2026-11-09'))).toBe(0); // Monday
+    expect(weekdayIndex(d('2026-11-15'))).toBe(6); // Sunday
+    expect(weekdayIndex(d('1970-01-01'))).toBe(3); // Thursday
+    expect(weekdayIndex(d('1969-12-31'))).toBe(2); // Wednesday, before the epoch
+    expect(weekdayIndex(d('2028-02-29'))).toBe(1); // a leap day, Tuesday
+  });
+
+  test('the start of a week is its Monday, across month and year ends', () => {
+    expect(startOfWeek(d('2026-11-09'))).toBe('2026-11-09');
+    expect(startOfWeek(d('2026-11-15'))).toBe('2026-11-09');
+    expect(startOfWeek(d('2026-12-02'))).toBe('2026-11-30');
+    expect(startOfWeek(d('2027-01-01'))).toBe('2026-12-28');
+  });
+
+  test('every day of one week shares a start', () => {
+    for (let i = 0; i < 7; i++) expect(startOfWeek(addDays(d('2026-11-09'), i))).toBe('2026-11-09');
+    expect(startOfWeek(d('2026-11-16'))).toBe('2026-11-16');
   });
 });

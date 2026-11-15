@@ -6,8 +6,17 @@ import { completeReview, createReviews, isLocalDate, snoozeReview, toLocalDate, 
 
 import type { LanternDB } from './db';
 import { newId } from './ids';
-import { DEFAULT_SETTINGS } from './seed';
-import type { FocusSession, Review, Settings, Topic, TopicInput, Track } from './types';
+import { DEFAULT_SETTINGS, starterTracks } from './seed';
+import {
+  TRACK_COLOURS,
+  type FocusSession,
+  type Review,
+  type Settings,
+  type Topic,
+  type TopicInput,
+  type Track,
+  type TrackColour,
+} from './types';
 
 export interface Snapshot {
   tracks: Track[];
@@ -151,4 +160,115 @@ export async function updateSettings(db: LanternDB, patch: Partial<Omit<Settings
 export async function saveFocusSession(db: LanternDB, session: FocusSession): Promise<FocusSession> {
   await db.focusSessions.put(session);
   return session;
+}
+
+/* ---------- Tracks ---------- */
+
+export class InvalidTrackError extends Error {}
+
+export interface TrackInput {
+  name: string;
+  colour: TrackColour;
+  /** Minutes of focus aimed at each week; 0 means no target. */
+  weeklyTargetMinutes: number;
+}
+
+export const TRACK_NAME_MAX = 60;
+export const TRACK_TARGET_MAX_MINUTES = 40 * 60;
+
+function checkTrackFields(patch: Partial<TrackInput>): void {
+  if (patch.name !== undefined) {
+    const name = patch.name.trim();
+    if (!name) throw new InvalidTrackError('A track needs a name.');
+    if (name.length > TRACK_NAME_MAX) throw new InvalidTrackError(`Keep the name under ${TRACK_NAME_MAX} letters.`);
+  }
+  if (patch.colour !== undefined && !TRACK_COLOURS.includes(patch.colour)) {
+    throw new InvalidTrackError('That colour is not one of the lantern colours.');
+  }
+  const target = patch.weeklyTargetMinutes;
+  if (target !== undefined && !(Number.isInteger(target) && target >= 0 && target <= TRACK_TARGET_MAX_MINUTES)) {
+    throw new InvalidTrackError('The weekly target should be between 0 and 40 hours.');
+  }
+}
+
+/** Adds a track after the others. */
+export async function addTrack(db: LanternDB, input: TrackInput, now: Date): Promise<Track> {
+  checkTrackFields(input);
+  return db.transaction('rw', [db.tracks], async () => {
+    const last = await db.tracks.orderBy('order').last();
+    const track: Track = {
+      id: newId(),
+      name: input.name.trim(),
+      colour: input.colour,
+      weeklyTargetMinutes: input.weeklyTargetMinutes,
+      defaultKind: 'concept',
+      order: (last?.order ?? -1) + 1,
+      archived: false,
+      createdAt: now.toISOString(),
+    };
+    await db.tracks.add(track);
+    return track;
+  });
+}
+
+/**
+ * Changes a track's name, colour, target, or whether it is in view. Topics stay with their
+ * track when it is put away. At least one track always stays in view, since Capture needs one.
+ */
+export async function updateTrack(
+  db: LanternDB,
+  id: string,
+  patch: Partial<TrackInput> & { archived?: boolean },
+): Promise<Track> {
+  checkTrackFields(patch);
+  return db.transaction('rw', [db.tracks], async () => {
+    const track = await db.tracks.get(id);
+    if (!track) throw new InvalidTrackError('That track is no longer here.');
+    if (patch.archived === true && !track.archived) {
+      const inView = (await db.tracks.toArray()).filter((t) => !t.archived && t.id !== id);
+      if (inView.length === 0) throw new InvalidTrackError('Keep at least one track in view.');
+    }
+    const next: Track = {
+      ...track,
+      ...(patch.name !== undefined && { name: patch.name.trim() }),
+      ...(patch.colour !== undefined && { colour: patch.colour }),
+      ...(patch.weeklyTargetMinutes !== undefined && { weeklyTargetMinutes: patch.weeklyTargetMinutes }),
+      ...(patch.archived !== undefined && { archived: patch.archived }),
+    };
+    await db.tracks.put(next);
+    return next;
+  });
+}
+
+/* ---------- Everything at once: restore and delete ---------- */
+
+/**
+ * Replaces everything on the device with a backup's contents, in one transaction: either
+ * all of it is swapped in or none of it is.
+ */
+export async function replaceAll(db: LanternDB, data: Snapshot): Promise<void> {
+  await db.transaction('rw', [db.tracks, db.topics, db.reviews, db.focusSessions, db.settings], async () => {
+    await Promise.all([db.tracks.clear(), db.topics.clear(), db.reviews.clear(), db.focusSessions.clear()]);
+    await db.settings.clear();
+    await db.tracks.bulkAdd(data.tracks);
+    await db.topics.bulkAdd(data.topics);
+    await db.reviews.bulkAdd(data.reviews);
+    await db.focusSessions.bulkAdd(data.focusSessions);
+    await db.settings.put({ ...data.settings, id: 'settings' });
+  });
+}
+
+/** Deletes everything and starts over as on first run: the starter tracks and default settings. */
+export async function wipeAll(db: LanternDB, now: Date): Promise<void> {
+  await db.transaction('rw', [db.tracks, db.topics, db.reviews, db.focusSessions, db.settings], async () => {
+    await Promise.all([
+      db.tracks.clear(),
+      db.topics.clear(),
+      db.reviews.clear(),
+      db.focusSessions.clear(),
+      db.settings.clear(),
+    ]);
+    await db.tracks.bulkAdd(starterTracks(now));
+    await db.settings.add(DEFAULT_SETTINGS);
+  });
 }

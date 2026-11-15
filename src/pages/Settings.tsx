@@ -10,6 +10,8 @@ import { useTheme, type ThemeChoice } from '../theme/theme';
 import { Screen } from '../ui/Screen';
 import { Button, Choice, TextField, Toggle } from '../ui/controls';
 
+import { DataSection } from './DataSection';
+
 const THEMES: readonly { value: ThemeChoice; label: string }[] = [
   { value: 'dark', label: 'Dark' },
   { value: 'paper', label: 'Paper' },
@@ -176,6 +178,8 @@ export function SettingsPage() {
         <h2>Appearance</h2>
         <Choice legend="Theme" options={THEMES} value={choice} onChange={setChoice} />
       </section>
+
+      <DataSection />
     </Screen>
   );
 }

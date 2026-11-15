@@ -1130,3 +1130,273 @@ select.ln-field__control {
 .ln-focus__sound {
   width: 100%;
 }
+
+/* ---------- Heatmap ---------- */
+.ln-heat {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.ln-heat__grid {
+  --heat-weeks: 12;
+  display: grid;
+  grid-template-columns: repeat(var(--heat-weeks), minmax(0, 1fr));
+  grid-template-rows: repeat(7, auto);
+  grid-auto-flow: column;
+  gap: 4px;
+}
+.ln-heat__cell {
+  display: block;
+  aspect-ratio: 1;
+  border-radius: 32%;
+  border: var(--hairline-w) solid var(--hairline);
+  background: transparent;
+}
+.ln-heat__cell[data-level='1'] {
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.ln-heat__cell[data-level='2'] {
+  background: color-mix(in srgb, var(--accent) 58%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+}
+.ln-heat__cell[data-level='3'] {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+/* days still to come are only a faint outline */
+.ln-heat__cell[data-future] {
+  border-style: dashed;
+  opacity: 0.45;
+}
+.ln-heat__legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-1);
+  font-size: var(--fs-micro);
+  color: var(--text-muted);
+}
+.ln-heat__legend .ln-heat__cell {
+  width: 12px;
+  aspect-ratio: auto;
+  height: 12px;
+}
+.ln-heat__legend span:first-child {
+  margin-right: var(--sp-1);
+}
+.ln-heat__legend span:last-child {
+  margin-left: var(--sp-1);
+}
+
+/* ---------- Meter ---------- */
+.ln-meter {
+  --meter-fill: 0;
+  display: block;
+  height: 6px;
+  border-radius: var(--r-pill);
+  background: var(--hairline);
+  overflow: hidden;
+}
+.ln-meter__fill {
+  display: block;
+  height: 100%;
+  width: calc(100% * var(--meter-fill));
+  border-radius: var(--r-pill);
+  background: var(--meter-colour, var(--accent));
+  transition: width var(--dur-slow) var(--ease-calm);
+}
+
+/* ---------- Stats ---------- */
+.ln-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--sp-3);
+  margin: 0;
+}
+/* Read as label, value, note; drawn as value, label, note. */
+.ln-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  padding: var(--sp-4);
+  border-radius: var(--r-soft);
+  border: var(--hairline-w) solid var(--hairline);
+  background: var(--surface);
+}
+.ln-stat dd,
+.ln-stat dt {
+  margin: 0;
+}
+.ln-stat__value {
+  order: 1;
+  font-size: var(--fs-h1);
+  line-height: 1.1;
+}
+.ln-stat__label {
+  order: 2;
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+.ln-stat__note {
+  order: 3;
+  font-size: var(--fs-micro);
+  color: var(--text-muted);
+}
+
+/* ---------- Week card, on Today ---------- */
+.ln-week {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  min-height: 84px;
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-soft);
+  border: var(--hairline-w) solid var(--hairline);
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  transition: background-color var(--dur-quick) var(--ease-calm);
+}
+.ln-week:focus-visible {
+  border-radius: var(--r-soft);
+}
+.ln-week:active {
+  background: var(--surface-2);
+}
+.ln-week__ring {
+  display: inline-flex;
+  flex: none;
+  font-size: var(--fs-small);
+}
+.ln-week__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ln-week__title {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+}
+.ln-week__line {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+}
+.ln-week .ln-row__go {
+  margin-left: auto;
+}
+
+/* ---------- Progress screen ---------- */
+.ln-streak {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-4);
+}
+.ln-streak__number {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+}
+.ln-streak__number .ln-mono {
+  font-size: var(--fs-timer);
+  font-weight: 300;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+.ln-meter-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  padding: var(--sp-2) 0;
+}
+.ln-meter-row__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  font-size: var(--fs-small);
+}
+.ln-meter-row__head .ln-muted {
+  white-space: nowrap;
+}
+
+/* ---------- Tracks screen ---------- */
+.ln-track {
+  border-top: var(--hairline-w) solid var(--hairline);
+}
+.ln-track:first-child {
+  border-top: 0;
+}
+.ln-track > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: 56px;
+  cursor: pointer;
+  list-style: none;
+}
+.ln-track > summary::-webkit-details-marker {
+  display: none;
+}
+.ln-track > summary:focus-visible {
+  border-radius: var(--r-soft);
+}
+.ln-track__dot {
+  width: 12px;
+  height: 12px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--track-dot, var(--ash));
+}
+.ln-track__name {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  overflow-wrap: anywhere;
+}
+.ln-track__meta {
+  font-size: var(--fs-small);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.ln-track[data-away] .ln-track__name {
+  color: var(--text-muted);
+}
+.ln-track > summary::after {
+  content: '+';
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+.ln-track[open] > summary::after {
+  content: '\2212';
+}
+.ln-track__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  padding: var(--sp-2) 0 var(--sp-5);
+}
+.ln-track__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+/* ---------- Your data, in Settings ---------- */
+.ln-data__confirm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  animation: ln-rise var(--dur-calm) var(--ease-calm) both;
+}
+.ln-data__confirm p {
+  color: var(--text-muted);
+}
+.ln-data__buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
