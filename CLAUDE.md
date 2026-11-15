@@ -19,7 +19,7 @@ The user is a working software engineer in Chennai (IST) upskilling toward AI en
 | P1 | Scheduler module and tests | done | `f4d93da` | Fable 5.2 (used) |
 | P2 | Data layer, Capture, Today | done | `26a6078` | Opus 5.5 (used) |
 | P3 | Review flow | done | `2872ae8` | Opus 5.5 (used) |
-| P4 | Notifications | done (not yet tested on a device) | see `git log` | Fable 5.2 (used) |
+| P4 | Notifications | done (not yet run on a device) | `5d17047` | Fable 5.2 (used) |
 | P5 | Focus mode and ambient sound | next | | Fable 5.2 |
 | P6 | Progress, tracks and weekly goals, export and import | | | Sonnet 5.5 |
 | P7 | Polish, accessibility pass, Android build | | | Opus 5.5 |
@@ -207,6 +207,7 @@ Why each phase gets its model:
 - Known limit: a timezone change while the app is closed is corrected the next time it opens.
 - Web: reminders only fire while the app is open; Android Chrome cannot show them at all (Settings says so).
 - New component: `Offer`. Time fields are `TextField type="time"`. Both on the style-guide page.
+- Playwright covers the offer (yes and not now) and the reminder settings, with notification permission granted to the test browser.
 - Left for P7: notification small icon, and testing all of this on a real device.
 
 ## Environment notes
