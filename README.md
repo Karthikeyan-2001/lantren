@@ -8,8 +8,8 @@ A quiet focus-and-study app built around the 1-4-7 spaced revision method. You l
 | --- | --- | --- |
 | P0 | Project setup, design tokens, style-guide page | done |
 | P1 | Scheduler module and tests | done |
-| P2 | Data layer, Capture, Today | next |
-| P3 | Review flow | |
+| P2 | Data layer, Capture, Today | done |
+| P3 | Review flow | next |
 | P4 | Notifications | |
 | P5 | Focus mode and ambient sound | |
 | P6 | Progress, tracks and weekly goals, export and import | |

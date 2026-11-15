@@ -7,7 +7,8 @@ import { useTheme, type ThemeChoice } from '../theme/theme';
 import { Flame } from '../ui/Flame';
 import { Lantern } from '../ui/Lantern';
 import { Screen } from '../ui/Screen';
-import { Button, Choice, EmptyState, Pill, ProgressRing, TextArea, TextField } from '../ui/controls';
+import { TopicRow } from '../ui/TopicRow';
+import { Button, Choice, EmptyState, Notice, Pill, ProgressRing, TextArea, TextField } from '../ui/controls';
 
 import './StyleGuide.css';
 
@@ -202,7 +203,47 @@ export function StyleGuidePage() {
           placeholder="a few lines, in your own words"
           hint="Kept only on this device."
         />
+        <TextField label="Topic, left empty" error="A few words is enough, so you will know it again." />
         <Choice legend="How well did it come back?" options={RECALL} value={recall} onChange={setRecall} />
+        <Choice
+          legend="Track, with colour dots"
+          options={TRACKS.slice(0, 3).map(([name, colour]) => ({
+            value: name,
+            label: name,
+            colour: `var(--track-${colour})`,
+          }))}
+          value={TRACKS[0][0]}
+          onChange={() => undefined}
+        />
+      </Section>
+
+      <Section title="Topic rows" note="A compact lantern, a title, one quiet line. Used on Today and in Library.">
+        <ul className="ln-rows">
+          <TopicRow
+            title="Closures and the event loop"
+            flames={['waiting', 'unlit']}
+            colour="var(--track-wheat)"
+            trackName="JavaScript deep dive"
+            meta="day 4"
+          />
+          <TopicRow
+            title="Two sum, with a hash map"
+            flames={['lit', 'waiting']}
+            colour="var(--track-ember)"
+            trackName="DSA in JavaScript"
+            meta="day 7, since yesterday"
+          />
+          <TopicRow
+            title="Chunking strategies for RAG"
+            flames={['steady', 'steady']}
+            colour="var(--track-moss)"
+            meta="Concept · studied Mon 2 Nov · locked in"
+          />
+        </ul>
+      </Section>
+
+      <Section title="Notice" note="A one-line confirmation. Polite to screen readers, gone when dismissed.">
+        <Notice onDismiss={() => undefined}>“Closures” is lit. Back on Wed 18 Nov and Sat 21 Nov.</Notice>
       </Section>
 
       <Section title="Progress" note="A ring that fills slowly. No streak fireworks.">

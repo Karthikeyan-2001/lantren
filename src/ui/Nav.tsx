@@ -54,9 +54,11 @@ export function Nav() {
           </Link>
         ))}
       </nav>
-      <Link to="/capture" className="ln-fab" aria-label="Capture what you studied">
-        {icon(<path d="M12 5v14M5 12h14" strokeWidth="2" />)}
-      </Link>
+      {!pathname.startsWith('/capture') && (
+        <Link to="/capture" className="ln-fab" aria-label="Capture what you studied">
+          {icon(<path d="M12 5v14M5 12h14" strokeWidth="2" />)}
+        </Link>
+      )}
     </>
   );
 }
