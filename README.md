@@ -13,7 +13,7 @@ A quiet focus-and-study app built around the 1-4-7 spaced revision method. You l
 | P4 | Notifications | done |
 | P5 | Focus mode and ambient sound | done |
 | P6 | Progress, tracks and weekly goals, export and import | done |
-| P7 | Polish, accessibility pass, Android build | next |
+| P7 | Polish, accessibility pass, Android build | in progress (Android platform and cloud APK build added; audit not yet done) |
 
 ## Stack and decisions
 
@@ -70,17 +70,23 @@ npm run build
 
 ## Android build
 
-Needs Android Studio (with its bundled JDK and an Android SDK). The Android project is added in P7; the steps will be:
+The Android project lives in `android/` (Capacitor 8, app id `app.lantern.focus`).
+
+### Without installing anything: GitHub Actions
+
+`.github/workflows/android.yml` builds a debug APK on every push to `master`, or on demand from the repository's Actions tab (Run workflow). Open the run, download the `lantern-debug-apk` artifact, unzip it and copy `app-debug.apk` to the phone. Allow installs from unknown sources when asked.
+
+### On this machine
+
+Needs Android Studio (it bundles the JDK 21 and manages the Android SDK). After any change to the web code:
 
 ```bash
-npm install @capacitor/android
-npx cap add android
 npm run build
 npx cap sync android
 npx cap open android
 ```
 
-Then run on a device from Android Studio, or build an APK with Build > Build APK(s).
+Then run on a device from Android Studio, or use Build > Build Bundle(s) / APK(s) > Build APK(s). The file ends up in `android/app/build/outputs/apk/debug/`. A debug APK is fine for your own phone; a Play Store release needs a signed build and a keystore you keep safe.
 
 ## Layout
 

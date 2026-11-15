@@ -22,7 +22,7 @@ The user is a working software engineer in Chennai (IST) upskilling toward AI en
 | P4 | Notifications | done (not yet run on a device) | `5d17047` | Fable 5.2 (used) |
 | P5 | Focus mode and ambient sound | done (sound and screen lock not yet tried on a phone) | `719b607` | Fable 5.2 (used) |
 | P6 | Progress, tracks and weekly goals, export and import | done (export not yet tried on a phone) | `27da090` | Sonnet 5.5 (used) |
-| P7 | Polish, accessibility pass, Android build | next | | Opus 5.5 |
+| P7 | Polish, accessibility pass, Android build | in progress (Android platform and cloud APK build added; audit not yet done) | | Opus 5.5 |
 
 ## Which model to use
 
@@ -245,6 +245,13 @@ Why each phase gets its model:
 - Saving: on Android the file is written to the cache and handed to the share sheet (`@capacitor/filesystem`, `@capacitor/share`), because a WebView cannot download files; in a browser it is a normal download. Choosing a file uses a plain file input.
 - Playwright covers the Today ring and Progress, track editing, and a full backup, delete and restore round trip.
 - Left for P7: try Save a backup and Restore on a real Android device (share sheet, file picker, and where the file ends up).
+
+### P7 (Android part so far)
+- `@capacitor/android` 8.6.2 added and `npx cap add android` run; the `android/` folder is committed (its own `.gitignore` leaves out build output and the copied web assets).
+- Permissions (notifications, exact alarms, boot) come from the local-notifications plugin's own manifest, merged at build time, so the app manifest is untouched. `INTERNET` stays because Capacitor adds it; the app makes no network calls.
+- Reminder small icon is a white flame vector, `ic_stat_lantern`, wired in `capacitor.config.ts` with the ember tint.
+- APKs are built online by `.github/workflows/android.yml` (Node 22, JDK 21): unit tests, web build, `cap sync`, `gradlew assembleDebug`, uploaded as the `lantern-debug-apk` artifact. Debug build only; no signing keys are stored in the repo.
+- Not yet done in P7: the accessibility audit, airplane-mode and console pass, hiding the status bar during focus, adaptive launcher icon and splash from the Lantern artwork, and trying any of it on a device.
 
 ## Environment notes
 
