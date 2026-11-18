@@ -911,25 +911,35 @@ textarea.ln-field__control {
   transition: transform var(--dur-calm) var(--ease-spring);
   animation: ln-dock-in var(--dur-slow) var(--ease-out) 60ms both;
 }
-/* a brass ring on top: the capture button is a lantern waiting to be hung */
-.ln-fab::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: -9px;
-  width: 12px;
-  height: 12px;
-  margin-left: -6px;
+/* the capture button: an ember disc in a brass rim, the same height as the dock beside it */
+.ln-fab {
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
-  border: 2px solid var(--metal-hi);
-  box-shadow: 0 1px 2px var(--lantern-shadow);
+  border: 3px solid transparent;
+  background:
+    radial-gradient(
+        circle at 50% 32%,
+        color-mix(in srgb, var(--accent) 78%, var(--flame-core)),
+        var(--accent) 58%,
+        color-mix(in srgb, var(--accent) 86%, var(--flame-deep))
+      )
+      padding-box,
+    linear-gradient(160deg, var(--metal-hi), var(--metal-lo) 75%) border-box;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 232, 210, 0.45),
+    0 8px 24px -10px var(--glow),
+    var(--shadow-float);
+}
+.ln-fab svg {
+  margin-top: 0;
 }
 .ln-fab:active {
   transform: scale(0.93);
   transition-duration: 90ms;
 }
 .ln-fab:focus-visible {
-  border-radius: 999px 999px 18px 18px;
+  border-radius: 50%;
   outline-color: var(--text);
 }
 .ln-fab svg {
@@ -2566,11 +2576,11 @@ ion-content {
   stroke: color-mix(in srgb, var(--flame-core) 55%, transparent);
 }
 
-/* ---------- Heatmap: a row of metal studs, all one size ---------- */
+/* ---------- Heatmap: small lantern lenses, all one size ---------- */
 /*
- * Every day is the same round stud in the lantern's metal. What was done that day shows in
- * the finish, not the size: dull iron, polished brass, warm copper, then hot ember-metal.
- * Crisp edges, no blur, no motion.
+ * An empty day is a quiet recessed point. A worked day is a round lens in a thin brass rim,
+ * every one the same size; the glass inside warms with what was done: a faint ember, amber,
+ * then lit with a pale heart. Crisp edges, no blur, no motion.
  */
 .ln-heat__cell,
 .ln-heat__cell[data-level],
@@ -2589,47 +2599,51 @@ ion-content {
 .ln-heat__cell::after {
   content: '';
   position: absolute;
-  inset: 12%;
+  inset: 13%;
   border-radius: 50%;
-  box-shadow:
-    inset 0 1px 0 var(--glass-shine),
-    0 1px 1.5px var(--lantern-shadow);
-  transition: background var(--dur-slow) var(--ease-out);
+  border: 1.5px solid transparent;
+  box-shadow: inset 0 1px 0 var(--glass-shine);
 }
-/* nothing that day: dull, unpolished iron */
+/* nothing that day: a small recessed point */
 .ln-heat__cell[data-level='0']::after {
-  background: radial-gradient(
-    circle at 35% 30%,
-    color-mix(in srgb, var(--metal-lo) 60%, var(--surface-2)),
-    color-mix(in srgb, var(--metal-lo) 45%, var(--bg)) 75%
-  );
-  box-shadow: 0 1px 1px var(--lantern-shadow);
-  opacity: 0.5;
+  inset: 36%;
+  border: 0;
+  background: color-mix(in srgb, var(--metal-lo) 45%, var(--surface-2));
+  box-shadow: none;
 }
-/* a little: polished brass */
+/* a little: dark glass with a faint ember low in it */
 .ln-heat__cell[data-level='1']::after {
-  background: radial-gradient(circle at 35% 30%, var(--metal-hi), var(--metal-lo) 80%);
+  background:
+    radial-gradient(circle at 50% 70%, color-mix(in srgb, var(--accent) 38%, var(--bg)), color-mix(in srgb, var(--bg) 82%, var(--surface)) 70%)
+      padding-box,
+    linear-gradient(150deg, var(--metal-hi), var(--metal-lo)) border-box;
 }
-/* some: warm copper */
+/* some: amber glass */
 .ln-heat__cell[data-level='2']::after {
-  background: radial-gradient(
-    circle at 35% 30%,
-    color-mix(in srgb, var(--metal-hi) 55%, var(--flame-core)),
-    color-mix(in srgb, var(--accent) 50%, var(--metal-lo)) 80%
-  );
+  background:
+    radial-gradient(
+        circle at 50% 62%,
+        color-mix(in srgb, var(--accent) 70%, var(--flame-core)),
+        color-mix(in srgb, var(--accent) 55%, var(--bg)) 75%
+      )
+      padding-box,
+    linear-gradient(150deg, var(--metal-hi), var(--metal-lo)) border-box;
 }
-/* a lot: metal heated to an ember */
+/* a lot: the lens is lit, with a pale heart */
 .ln-heat__cell[data-level='3']::after {
-  background: radial-gradient(circle at 35% 30%, var(--flame-core), var(--accent) 50%, var(--flame-deep) 95%);
+  background:
+    radial-gradient(circle at 50% 58%, var(--flame-core), var(--accent) 52%, color-mix(in srgb, var(--accent) 75%, var(--flame-deep)))
+      padding-box,
+    linear-gradient(150deg, color-mix(in srgb, var(--metal-hi) 70%, var(--flame-core)), var(--metal-lo)) border-box;
 }
-/* days still to come: an empty ring where a stud will go */
+/* days still to come: an empty ring */
 .ln-heat__cell[data-future]::after {
-  inset: 26%;
+  inset: 30%;
   background: none;
   box-shadow: none;
   border: var(--hairline-w) solid var(--hairline-strong);
 }
-/* today: an ember ring round its stud */
+/* today: an ember ring round its lens */
 .ln-heat__cell[data-today]::before {
   content: '';
   position: absolute;
