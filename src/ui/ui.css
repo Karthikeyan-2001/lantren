@@ -2522,14 +2522,6 @@ ion-content {
 .ln-ring__stop-bright {
   stop-color: color-mix(in srgb, var(--ring-colour, var(--accent)) 78%, var(--flame-core));
 }
-.ln-ring__stop-warm {
-  stop-color: var(--ring-colour, var(--accent));
-  stop-opacity: calc(0.04 + 0.26 * var(--ring-fraction, 0));
-}
-.ln-ring__stop-clear {
-  stop-color: var(--ring-colour, var(--accent));
-  stop-opacity: 0;
-}
 .ln-ring__value {
   stroke-linecap: round;
   filter: drop-shadow(0 0 3px color-mix(in srgb, var(--ring-colour, var(--accent)) 60%, transparent));
@@ -2555,8 +2547,7 @@ ion-content {
 }
 .ln-ring__tip-glow {
   fill: var(--ring-colour, var(--accent));
-  opacity: 0.4;
-  filter: blur(2px);
+  opacity: 0.25;
 }
 .ln-ring__tip-core {
   fill: var(--flame-core);
@@ -2568,10 +2559,6 @@ ion-content {
   opacity: 0;
 }
 /* complete: the whole dial glows a steady gold */
-.ln-ring[data-full] .ln-ring__stop-warm {
-  stop-color: var(--glow-steady);
-  stop-opacity: 0.9;
-}
 .ln-ring[data-full] .ln-ring__value {
   filter: drop-shadow(0 0 5px var(--glow-steady));
 }
@@ -2595,63 +2582,34 @@ ion-content {
 .ln-heat__cell::before {
   content: '';
   position: absolute;
-  inset: 16%;
+  inset: 22%;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--surface-2) 85%, transparent);
-  box-shadow: var(--well-shadow);
+  background: color-mix(in srgb, var(--surface-2) 90%, transparent);
 }
-/* the ember: it grows and brightens with what was done that day */
+/* the day's light: a crisp dot that grows and deepens with what was done; no blur, no motion */
 .ln-heat__cell::after {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: radial-gradient(
-    circle at 50% 46%,
-    var(--ember-core) 0%,
-    color-mix(in srgb, var(--accent) 75%, var(--ember-core)) 24%,
-    var(--accent) 46%,
-    color-mix(in srgb, var(--accent) 35%, transparent) 56%,
-    transparent 66%
-  );
+  background: var(--accent);
   opacity: 0;
   scale: 0.3;
   transition:
     opacity var(--dur-slow) var(--ease-out),
-    scale var(--dur-slow) var(--ease-spring);
+    scale var(--dur-slow) var(--ease-out);
 }
 .ln-heat__cell[data-level='1']::after {
-  opacity: 0.45;
-  scale: 0.62;
+  opacity: 0.4;
+  scale: 0.5;
 }
 .ln-heat__cell[data-level='2']::after {
-  opacity: 0.75;
-  scale: 0.82;
+  opacity: 0.7;
+  scale: 0.68;
 }
 .ln-heat__cell[data-level='3']::after {
   opacity: 1;
-  scale: 1;
-  filter: drop-shadow(0 0 2px var(--glow));
-}
-/* the brightest days breathe, each a little out of step with its neighbours */
-.ln-heat__grid .ln-heat__cell[data-level='3']::after {
-  animation: ln-ember-breathe 3.4s ease-in-out infinite alternate;
-}
-.ln-heat__grid .ln-heat__cell[data-level='3']:nth-child(3n)::after {
-  animation-duration: 4.1s;
-  animation-delay: -1.3s;
-}
-.ln-heat__grid .ln-heat__cell[data-level='3']:nth-child(3n + 1)::after {
-  animation-duration: 2.9s;
-  animation-delay: -0.6s;
-}
-@keyframes ln-ember-breathe {
-  from {
-    opacity: 0.82;
-  }
-  to {
-    opacity: 1;
-  }
+  scale: 0.84;
 }
 /* days still to come are only a faint ring */
 .ln-heat__cell[data-future]::before {
@@ -2662,22 +2620,20 @@ ion-content {
 }
 /* today: an ember-coloured ring round its socket */
 .ln-heat__cell[data-today]::before {
-  inset: 4%;
+  inset: 0;
   background: none;
   border: 1.5px solid var(--accent-text);
-  box-shadow: 0 0 8px -1px var(--glow);
+  box-shadow: none;
 }
 .ln-heat__grid {
-  gap: 2px;
+  gap: 3px;
 }
 .ln-heat__days,
 .ln-heat__months {
   gap: 2px;
 }
 .ln-panel .ln-heat__board {
-  background:
-    radial-gradient(90% 70% at 85% 60%, color-mix(in srgb, var(--accent) 6%, transparent), transparent 70%),
-    color-mix(in srgb, var(--bg) 70%, var(--surface));
+  background: color-mix(in srgb, var(--bg) 70%, var(--surface));
 }
 .ln-heat__legend .ln-heat__cell {
   width: 14px;

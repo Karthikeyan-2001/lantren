@@ -297,8 +297,8 @@ Why each phase gets its model:
 - The style-guide e2e check matches the heading exactly, so the fading Library heading ("Your lanterns") cannot match it mid-transition.
 
 ### P7 (dials and embers)
-- `ProgressRing` is an ember dial: a brass rim, a sunken track with twelve hour marks, an arc that brightens toward its end (a gradient in the ring's colour), and a glowing tip at the arc's leading end, turned with `--ring-fraction` so it travels with the fill. The glass inside warms with progress; a full ring glows the steady gold and hides the tip; an empty ring shows no arc. Arc and tip draw in together on arrival.
-- Heatmap days are embers in small sockets: the ember grows and brightens with the day's level (1, 2, 3 or more), the brightest breathe slowly and out of step, today is an ember-coloured ring, future days are a faint ring. New token `--ember-core` (pale gold on dark, a deeper orange on paper, so the centre does not vanish against cream).
+- `ProgressRing` is an ember dial: a brass rim, a sunken track with twelve hour marks, an arc that brightens toward its end (a gradient in the ring's colour), and a small tip at the arc's leading end, turned with `--ring-fraction` so it travels with the fill. A full ring glows the steady gold and hides the tip; an empty ring shows no arc. Arc and tip draw in together on arrival. The centre stays clear: a glow inside the dial was tried and dropped, as it carried no meaning.
+- Heatmap days are crisp, still dots in small flat sockets: a dot grows and deepens with the day's level (1, 2, 3 or more), today is a plain ember-coloured ring, future days a faint ring. A first version with blurred, glowing, breathing embers strained the eye across 84 cells and was replaced: no blur, halo or motion in the grid.
 
 ## Environment notes
 

@@ -214,7 +214,7 @@ interface RingProps {
 /**
  * A dial in the lantern's materials: a sunken track in a brass rim, an arc that warms from
  * deep ember into its colour, and a small flame at the arc's leading end that travels round
- * as it fills. The inside of the dial warms with progress; a full ring glows a steady gold.
+ * as it fills. A full ring glows a steady gold.
  */
 export function ProgressRing({ value, max, size = 88, colour, label, children }: RingProps) {
   const id = useId();
@@ -224,7 +224,6 @@ export function ProgressRing({ value, max, size = 88, colour, label, children }:
   const circumference = 2 * Math.PI * r;
   const fraction = max > 0 ? Math.min(1, Math.max(0, value / max)) : 0;
   const arc = `${id}-arc`;
-  const warmth = `${id}-warmth`;
   const ticks = Array.from({ length: 12 }, (_, i) => (i * Math.PI) / 6);
   return (
     <span
@@ -249,13 +248,7 @@ export function ProgressRing({ value, max, size = 88, colour, label, children }:
             <stop offset="0" className="ln-ring__stop-deep" />
             <stop offset="1" className="ln-ring__stop-bright" />
           </linearGradient>
-          <radialGradient id={warmth}>
-            <stop offset="0" className="ln-ring__stop-warm" />
-            <stop offset="1" className="ln-ring__stop-clear" />
-          </radialGradient>
         </defs>
-        {/* the glass inside the dial, warming as it fills */}
-        <circle className="ln-ring__glass" cx={centre} cy={centre} r={r - stroke / 2 - 1} fill={`url(#${warmth})`} />
         {/* brass rim, sunken track and twelve hour marks */}
         <circle className="ln-ring__rim" cx={centre} cy={centre} r={r + stroke / 2 + 1} />
         <circle className="ln-ring__track" cx={centre} cy={centre} r={r} strokeWidth={stroke} />
