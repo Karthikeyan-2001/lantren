@@ -271,6 +271,11 @@ Why each phase gets its model:
 - Flames 40 px and wider are "live": the outline morphs (CSS `d: path()`), the core pulses, the glow breathes and two small sparks rise now and then, fading as the flame burns down. Smaller flames (list rows, lanterns) only let the inner tongue breathe, to keep long lists calm and cheap to draw.
 - Browsers without CSS `d` animation (Safari) keep the still outline with the other layers moving. Reduced motion stops everything through the global rule.
 
+### P7 (lanterns and window arch)
+- `.ln-arch` is no longer a dome: a low elliptical window arch (rise `clamp(64px, 22vw, 104px)`) with an inner hairline frame 7 px in, so it looks like a window at any width. `--r-arch` is still used for tall, narrow shapes (Hearth, style-guide specimens).
+- `EmptyState` shows a lit flame (40 px, so it is live) standing on a sill inside a soft round halo.
+- `Lantern` is drawn as a lantern: a handle loop, a finial in the track colour, a glass pane with a mullion between the two flames, and a base with d4 and d7. The glass warms with `data-glow` (none, ember while waiting, half, full); locked in uses the steady glow and an ember rim.
+
 ## Environment notes
 
 - Windows 11, Node 26. No Java or Android SDK installed, so Android builds wait for Android Studio.

@@ -247,7 +247,9 @@ export function EmptyState({ title, children }: { title: string; children: React
   return (
     <div className="ln-arch">
       <div className="ln-empty">
-        <Flame state="waiting" size={34} />
+        <span className="ln-empty__lamp" aria-hidden="true">
+          <Flame state="lit" size={40} />
+        </span>
         <h2>{title}</h2>
         {children}
       </div>

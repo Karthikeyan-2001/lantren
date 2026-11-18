@@ -163,11 +163,25 @@
   box-shadow: var(--edge-light), var(--shadow-1);
 }
 .ln-arch {
-  border-radius: var(--r-arch);
-  padding: var(--sp-7) var(--sp-5) var(--sp-6);
+  --arch-rise: clamp(64px, 22vw, 104px);
+  position: relative;
+  isolation: isolate;
+  border-radius: 50% 50% var(--r-soft) var(--r-soft) / var(--arch-rise) var(--arch-rise) var(--r-soft) var(--r-soft);
+  padding: calc(var(--arch-rise) * 0.55) var(--sp-5) var(--sp-6);
   background:
-    radial-gradient(120% 60% at 50% 0%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 70%),
-    var(--surface);
+    radial-gradient(70% 55% at 50% 18%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 75%),
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 45%, var(--surface)), var(--surface) 60%);
+}
+/* the window's inner frame, a hairline set in from the edge */
+.ln-arch::before {
+  content: '';
+  position: absolute;
+  inset: 7px;
+  z-index: -1;
+  border-radius: 50% 50% calc(var(--r-soft) - 6px) calc(var(--r-soft) - 6px) /
+    calc(var(--arch-rise) - 7px) calc(var(--arch-rise) - 7px) calc(var(--r-soft) - 6px) calc(var(--r-soft) - 6px);
+  border: var(--hairline-w) solid var(--hairline);
+  pointer-events: none;
 }
 .ln-card {
   border-radius: var(--r-soft);
@@ -180,12 +194,37 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: var(--sp-4);
+  gap: var(--sp-3);
   max-width: 300px;
   margin: 0 auto;
 }
 .ln-empty p {
   color: var(--text-muted);
+}
+.ln-empty > :last-child {
+  margin-top: var(--sp-2);
+}
+.ln-empty__lamp {
+  position: relative;
+  display: grid;
+  place-items: end center;
+  width: 84px;
+  height: 84px;
+  margin-bottom: var(--sp-2);
+  padding-bottom: 14px;
+  border-radius: 50%;
+  border: var(--hairline-w) solid var(--hairline);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--accent) 16%, transparent), transparent);
+  box-shadow: inset 0 0 0 6px color-mix(in srgb, var(--surface-2) 40%, transparent);
+}
+.ln-empty__lamp::after {
+  /* the little sill the flame stands on */
+  content: '';
+  position: absolute;
+  left: 30%;
+  right: 30%;
+  bottom: 14px;
+  border-top: var(--hairline-w) solid var(--hairline-strong);
 }
 
 /* ---------- Flame ---------- */
@@ -422,45 +461,111 @@
 
 /* ---------- Lantern: one topic, two flames ---------- */
 .ln-lantern {
+  --lantern-w: 96px;
+  --lantern-pad: 7px;
   position: relative;
   display: inline-flex;
   flex-direction: column;
-  align-items: center;
-  gap: var(--sp-2);
-  width: 96px;
-  padding: var(--sp-5) var(--sp-3) var(--sp-3);
-  border-radius: var(--r-arch);
+  align-items: stretch;
+  gap: 5px;
+  width: var(--lantern-w);
+  margin-top: 12px;
+  padding: var(--lantern-pad) var(--lantern-pad) 5px;
+  border-radius: calc(var(--lantern-w) / 2) calc(var(--lantern-w) / 2) 12px 12px;
   border: var(--hairline-w) solid var(--hairline-strong);
-  background: var(--surface);
-  overflow: hidden;
+  background: linear-gradient(180deg, var(--surface-2), var(--surface) 70%);
+  box-shadow: var(--edge-light), var(--shadow-1);
   flex: none;
+  transition: border-color var(--dur-slow) var(--ease-settle);
 }
+/* the handle: a loop above the roof */
 .ln-lantern::before {
-  /* the track's colour, as a hairline cap */
   content: '';
   position: absolute;
-  top: 9px;
   left: 50%;
+  top: -12px;
   width: 18px;
-  height: 3px;
+  height: 14px;
   margin-left: -9px;
-  border-radius: 3px;
+  border: 1.5px solid var(--hairline-strong);
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
+}
+/* the finial, in the track's colour */
+.ln-lantern::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -4px;
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  border-radius: 50%;
   background: var(--lantern-colour, var(--ash));
+  box-shadow: 0 0 0 2px var(--bg);
+}
+.ln-lantern__glass {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  justify-content: center;
+  padding: 24px 4px 8px;
+  border-radius: calc(var(--lantern-w) / 2 - var(--lantern-pad)) calc(var(--lantern-w) / 2 - var(--lantern-pad)) 6px 6px;
+  border: var(--hairline-w) solid var(--hairline);
+  background: color-mix(in srgb, var(--bg) 55%, var(--surface));
+  overflow: hidden;
+}
+/* light thrown on the glass; warmer as more of its flames are lit */
+.ln-lantern__glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(85% 70% at 50% 92%, var(--glow), transparent 75%);
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-settle);
+}
+/* a thin mullion between the two panes */
+.ln-lantern__glass::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 22%;
+  bottom: 0;
+  border-left: var(--hairline-w) solid var(--hairline);
+}
+.ln-lantern[data-glow='ember'] .ln-lantern__glass::before {
+  opacity: 0.35;
+}
+.ln-lantern[data-glow='half'] .ln-lantern__glass::before {
+  opacity: 0.65;
+}
+.ln-lantern[data-glow='full'] .ln-lantern__glass::before {
+  opacity: 1;
 }
 .ln-lantern__flames {
   display: flex;
-  gap: var(--sp-4);
+  gap: var(--sp-5);
   align-items: flex-end;
 }
 .ln-lantern__labels {
   display: flex;
-  gap: var(--sp-3);
+  justify-content: space-around;
   font-family: var(--font-mono);
   font-size: 0.6875rem;
+  line-height: 1.2;
   color: var(--text-muted);
 }
 .ln-lantern[data-locked='true'] {
   border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.ln-lantern[data-locked='true']::after {
+  box-shadow:
+    0 0 0 2px var(--bg),
+    0 0 10px var(--glow-steady);
+}
+.ln-lantern[data-locked='true'] .ln-lantern__glass::before {
+  background: radial-gradient(90% 75% at 50% 90%, var(--glow-steady), transparent 78%);
 }
 
 /* ---------- Progress ring ---------- */
@@ -837,20 +942,33 @@ textarea.ln-field__control {
 
 /* ---------- Compact lantern, for list rows ---------- */
 .ln-lantern--compact {
-  width: 64px;
-  padding: var(--sp-4) var(--sp-2) var(--sp-2);
-  gap: var(--sp-1);
+  --lantern-w: 62px;
+  --lantern-pad: 5px;
+  gap: 3px;
+  margin-top: 9px;
+  border-radius: calc(var(--lantern-w) / 2) calc(var(--lantern-w) / 2) 10px 10px;
 }
 .ln-lantern--compact::before {
-  top: 7px;
-  width: 14px;
-  margin-left: -7px;
+  top: -9px;
+  width: 13px;
+  height: 10px;
+  margin-left: -6.5px;
+  border-width: 1.25px;
+}
+.ln-lantern--compact::after {
+  top: -3px;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+}
+.ln-lantern--compact .ln-lantern__glass {
+  padding: 16px 2px 6px;
+  border-radius: calc(var(--lantern-w) / 2 - var(--lantern-pad)) calc(var(--lantern-w) / 2 - var(--lantern-pad)) 5px 5px;
 }
 .ln-lantern--compact .ln-lantern__flames {
   gap: var(--sp-3);
 }
 .ln-lantern--compact .ln-lantern__labels {
-  gap: var(--sp-3);
   font-size: 0.625rem;
 }
 
