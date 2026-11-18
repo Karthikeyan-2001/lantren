@@ -211,29 +211,78 @@ interface RingProps {
   children?: ReactNode;
 }
 
+/**
+ * A dial in the lantern's materials: a sunken track in a brass rim, an arc that warms from
+ * deep ember into its colour, and a small flame at the arc's leading end that travels round
+ * as it fills. The inside of the dial warms with progress; a full ring glows a steady gold.
+ */
 export function ProgressRing({ value, max, size = 88, colour, label, children }: RingProps) {
-  const stroke = 4;
-  const r = (size - stroke) / 2;
+  const id = useId();
+  const stroke = size >= 80 ? 6 : 5;
+  const centre = size / 2;
+  const r = centre - stroke / 2 - 2;
   const circumference = 2 * Math.PI * r;
   const fraction = max > 0 ? Math.min(1, Math.max(0, value / max)) : 0;
+  const arc = `${id}-arc`;
+  const warmth = `${id}-warmth`;
+  const ticks = Array.from({ length: 12 }, (_, i) => (i * Math.PI) / 6);
   return (
     <span
       className="ln-ring"
-      style={{ width: size, height: size, '--ring-colour': colour } as CSSProperties}
+      data-full={fraction >= 1 || undefined}
+      data-empty={fraction === 0 || undefined}
+      style={
+        {
+          width: size,
+          height: size,
+          '--ring-colour': colour,
+          '--ring-fraction': fraction,
+          '--ring-c': circumference,
+        } as CSSProperties
+      }
       role="img"
       aria-label={label}
     >
-      <svg width={size} height={size} aria-hidden="true" focusable="false">
-        <circle className="ln-ring__track" cx={size / 2} cy={size / 2} r={r} strokeWidth={stroke} />
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id={arc} x1="0" y1="1" x2="1" y2="0">
+            <stop offset="0" className="ln-ring__stop-deep" />
+            <stop offset="1" className="ln-ring__stop-bright" />
+          </linearGradient>
+          <radialGradient id={warmth}>
+            <stop offset="0" className="ln-ring__stop-warm" />
+            <stop offset="1" className="ln-ring__stop-clear" />
+          </radialGradient>
+        </defs>
+        {/* the glass inside the dial, warming as it fills */}
+        <circle className="ln-ring__glass" cx={centre} cy={centre} r={r - stroke / 2 - 1} fill={`url(#${warmth})`} />
+        {/* brass rim, sunken track and twelve hour marks */}
+        <circle className="ln-ring__rim" cx={centre} cy={centre} r={r + stroke / 2 + 1} />
+        <circle className="ln-ring__track" cx={centre} cy={centre} r={r} strokeWidth={stroke} />
+        {ticks.map((t) => (
+          <circle
+            key={t}
+            className="ln-ring__tick"
+            cx={centre + r * Math.cos(t)}
+            cy={centre + r * Math.sin(t)}
+            r={stroke * 0.14}
+          />
+        ))}
         <circle
           className="ln-ring__value"
-          cx={size / 2}
-          cy={size / 2}
+          cx={centre}
+          cy={centre}
           r={r}
           strokeWidth={stroke}
+          stroke={`url(#${arc})`}
           strokeDasharray={circumference}
           strokeDashoffset={circumference * (1 - fraction)}
         />
+        {/* the flame at the arc's leading end, turned to where the arc stops */}
+        <g className="ln-ring__tip">
+          <circle className="ln-ring__tip-glow" cx={centre + r} cy={centre} r={stroke * 1.25} />
+          <circle className="ln-ring__tip-core" cx={centre + r} cy={centre} r={stroke * 0.42} />
+        </g>
       </svg>
       <span className="ln-ring__label" aria-hidden="true">
         {children}

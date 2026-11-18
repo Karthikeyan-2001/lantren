@@ -81,6 +81,8 @@
   --glow-steady: rgba(255, 190, 120, 0.3);
   --flame-core: #ffd9a8;
   --flame-deep: #c23a1c;
+  /* the hot centre of a small ember, as seen against this theme's desk */
+  --ember-core: #ffd9a8;
   /* the lantern: aged bronze, dark glass */
   --metal-hi: #8a7562;
   --metal-lo: #3a3029;
@@ -118,6 +120,7 @@
   --glow-steady: rgba(226, 150, 70, 0.26);
   --flame-core: #ffe6c4;
   --flame-deep: #d2441f;
+  --ember-core: #ffa063;
   --metal-hi: #b59877;
   --metal-lo: #6e5641;
   --glass: rgba(255, 244, 228, 0.78);
