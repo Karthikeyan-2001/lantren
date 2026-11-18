@@ -298,10 +298,10 @@ Why each phase gets its model:
 
 ### P7 (dials and embers)
 - `ProgressRing` is an ember dial: a brass rim, a sunken track with twelve hour marks, an arc that brightens toward its end (a gradient in the ring's colour), and a small tip at the arc's leading end, turned with `--ring-fraction` so it travels with the fill. A full ring glows the steady gold and hides the tip; an empty ring shows no arc. Arc and tip draw in together on arrival. The centre stays clear: a glow inside the dial was tried and dropped, as it carried no meaning.
-- Heatmap days are circles, all one size. An empty day is a small recessed point; a worked day is a lens in a thin brass rim whose glass warms with the level (a faint ember low in dark glass, amber, then lit with a pale heart). Crisp, no blur or motion. Today has an ember ring; future days an empty ring. Every weekday is labelled down the side (M T W T F S S). Earlier tries, dropped: blurred breathing embers (strained the eye), dots growing with the level, rounded-square tiles, plain metal studs, and small flames.
+- Heatmap days are circles, all one size. An empty day is a small recessed point; a worked day is a flat lens in a solid 1.5 px brass rim whose glass deepens with the level (ember-tinted dark glass, amber, then lit with a hard-edged pale heart). Flat fills and hard edges only: soft gradients at this size read as blur. Today has an ember ring; future days an empty ring. Every weekday is labelled down the side (M T W T F S S). Earlier tries, dropped: blurred breathing embers, dots growing with the level, rounded-square tiles, plain metal studs, small flames, and gradient-filled lenses.
 
 ### P7 (capture button)
-- The capture button is a 60 px round ember disc in a 3 px brass rim (`--metal-*` gradient), the same height as the dock and level with it. The arch shape and the hanging ring on top are gone.
+- The capture button is seated inside the dock as its last control: a 48 px ember button ringed in brass, after Today, Focus and Library (`.ln-nav__places` holds the three and the gliding indicator). A separate floating button read as a stock Material FAB, which the design rules rule out. On Capture and Review the button is left out and the dock spans the three places. Still three destinations.
 
 ## Environment notes
 

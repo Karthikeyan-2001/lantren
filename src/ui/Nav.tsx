@@ -53,7 +53,7 @@ const belongsTo = (destination: string, pathname: string): boolean =>
   pathname.startsWith(destination) || (SUBPAGES[destination] ?? []).some((p) => pathname.startsWith(p));
 
 /**
- * Three destinations, plus the floating capture lantern. `hidden` takes all of it away,
+ * Three destinations, and the capture button seated at the end of the same dock. `hidden` takes all of it away,
  * for the one screen that is meant to be the only thing on the phone: a running focus session.
  */
 export function Nav({ hidden = false }: { hidden?: boolean }) {
@@ -64,24 +64,28 @@ export function Nav({ hidden = false }: { hidden?: boolean }) {
   return (
     <>
       <div className="ln-dock-scrim" aria-hidden="true" />
-      <nav
-        className={capture ? 'ln-nav' : 'ln-nav ln-nav--solo'}
-        aria-label="Main"
-        style={{ '--nav-index': Math.max(active, 0) } as CSSProperties}
-      >
-        <span className="ln-nav__indicator" data-off={active < 0 || undefined} aria-hidden="true" />
-        {DESTINATIONS.map((d, i) => (
-          <Link key={d.to} to={d.to} replace className="ln-nav__link" aria-current={i === active ? 'page' : undefined}>
-            {d.icon}
-            {d.label}
+      <nav className="ln-nav" aria-label="Main">
+        <span className="ln-nav__places" style={{ '--nav-index': Math.max(active, 0) } as CSSProperties}>
+          <span className="ln-nav__indicator" data-off={active < 0 || undefined} aria-hidden="true" />
+          {DESTINATIONS.map((d, i) => (
+            <Link
+              key={d.to}
+              to={d.to}
+              replace
+              className="ln-nav__link"
+              aria-current={i === active ? 'page' : undefined}
+            >
+              {d.icon}
+              {d.label}
+            </Link>
+          ))}
+        </span>
+        {capture && (
+          <Link to="/capture" className="ln-nav__capture" aria-label="Capture what you studied">
+            {icon(<path d="M12 5.5v13M5.5 12h13" strokeWidth="2.25" />)}
           </Link>
-        ))}
+        )}
       </nav>
-      {capture && (
-        <Link to="/capture" className="ln-fab" aria-label="Capture what you studied">
-          {icon(<path d="M12 5v14M5 12h14" strokeWidth="2" />)}
-        </Link>
-      )}
     </>
   );
 }

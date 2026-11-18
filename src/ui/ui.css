@@ -812,9 +812,10 @@ textarea.ln-field__control {
   z-index: 100;
   transform: translateX(-50%);
   display: flex;
+  align-items: center;
+  gap: 6px;
   padding: 5px;
-  width: min(calc(100% - 2 * var(--gutter) - 72px), 340px);
-  margin-left: -36px;
+  width: min(calc(100% - 2 * var(--gutter)), 400px);
   border-radius: var(--r-pill);
   border: var(--hairline-w) solid var(--hairline);
   background: color-mix(in srgb, var(--surface) 88%, transparent);
@@ -829,17 +830,19 @@ textarea.ln-field__control {
     translate: 0 16px;
   }
 }
-/* with no capture button beside it, the dock sits in the middle */
-.ln-nav--solo {
-  margin-left: 0;
-  width: min(calc(100% - 2 * var(--gutter)), 340px);
+/* the three places, with the indicator gliding under the current one */
+.ln-nav__places {
+  position: relative;
+  flex: 1;
+  display: flex;
+  min-width: 0;
 }
 .ln-nav__indicator {
   position: absolute;
-  top: 5px;
-  bottom: 5px;
-  left: 5px;
-  width: calc((100% - 10px) / var(--nav-count));
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: calc(100% / var(--nav-count));
   border-radius: var(--r-pill);
   background: var(--surface-2);
   box-shadow: inset 0 0 0 1px var(--hairline);
@@ -891,61 +894,42 @@ textarea.ln-field__control {
   transition-duration: 90ms;
 }
 
-.ln-fab {
-  position: fixed;
-  z-index: 100;
-  right: max(var(--gutter), calc(50% - 170px - 36px));
-  bottom: calc(var(--sp-4) + env(safe-area-inset-bottom));
-  width: 60px;
-  height: 68px;
+/* capture: an ember button seated at the end of the dock, ringed in brass */
+.ln-nav__capture {
+  flex: none;
   display: grid;
   place-items: center;
-  border-radius: 999px 999px 18px 18px;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 86%, var(--flame-core)), var(--accent) 60%);
-  color: var(--on-accent);
-  text-decoration: none;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 232, 210, 0.55),
-    0 10px 28px -10px var(--glow),
-    var(--shadow-float);
-  transition: transform var(--dur-calm) var(--ease-spring);
-  animation: ln-dock-in var(--dur-slow) var(--ease-out) 60ms both;
-}
-/* the capture button: an ember disc in a brass rim, the same height as the dock beside it */
-.ln-fab {
-  width: 60px;
-  height: 60px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  border: 3px solid transparent;
-  background:
-    radial-gradient(
-        circle at 50% 32%,
-        color-mix(in srgb, var(--accent) 78%, var(--flame-core)),
-        var(--accent) 58%,
-        color-mix(in srgb, var(--accent) 86%, var(--flame-deep))
-      )
-      padding-box,
-    linear-gradient(160deg, var(--metal-hi), var(--metal-lo) 75%) border-box;
+  background: var(--accent);
+  color: var(--on-accent);
   box-shadow:
-    inset 0 1px 0 rgba(255, 232, 210, 0.45),
-    0 8px 24px -10px var(--glow),
-    var(--shadow-float);
+    0 0 0 1.5px color-mix(in srgb, var(--metal-hi) 80%, transparent),
+    0 4px 14px -6px var(--glow);
+  text-decoration: none;
+  transition:
+    transform var(--dur-calm) var(--ease-spring),
+    box-shadow var(--dur-quick) var(--ease-calm);
 }
-.ln-fab svg {
-  margin-top: 0;
+.ln-nav__capture svg {
+  width: 22px;
+  height: 22px;
 }
-.ln-fab:active {
-  transform: scale(0.93);
+.ln-nav__capture:active {
+  transform: scale(0.92);
   transition-duration: 90ms;
 }
-.ln-fab:focus-visible {
+.ln-nav__capture:focus-visible {
   border-radius: 50%;
   outline-color: var(--text);
 }
-.ln-fab svg {
-  width: 24px;
-  height: 24px;
-  margin-top: 6px;
+@media (hover: hover) {
+  .ln-nav__capture:hover {
+    box-shadow:
+      0 0 0 1.5px var(--metal-hi),
+      0 6px 18px -6px var(--glow);
+  }
 }
 
 /* ---------- Timer digits ---------- */
@@ -2601,8 +2585,6 @@ ion-content {
   position: absolute;
   inset: 13%;
   border-radius: 50%;
-  border: 1.5px solid transparent;
-  box-shadow: inset 0 1px 0 var(--glass-shine);
 }
 /* nothing that day: a small recessed point */
 .ln-heat__cell[data-level='0']::after {
@@ -2611,30 +2593,23 @@ ion-content {
   background: color-mix(in srgb, var(--metal-lo) 45%, var(--surface-2));
   box-shadow: none;
 }
-/* a little: dark glass with a faint ember low in it */
+/* a worked day: a flat lens in a solid brass rim; the glass deepens with the level */
+.ln-heat__cell:is([data-level='1'], [data-level='2'], [data-level='3'])::after {
+  border: 1.5px solid var(--metal-hi);
+  box-shadow: none;
+}
+/* a little: dark glass with an ember tint */
 .ln-heat__cell[data-level='1']::after {
-  background:
-    radial-gradient(circle at 50% 70%, color-mix(in srgb, var(--accent) 38%, var(--bg)), color-mix(in srgb, var(--bg) 82%, var(--surface)) 70%)
-      padding-box,
-    linear-gradient(150deg, var(--metal-hi), var(--metal-lo)) border-box;
+  background: color-mix(in srgb, var(--accent) 22%, var(--bg));
 }
 /* some: amber glass */
 .ln-heat__cell[data-level='2']::after {
-  background:
-    radial-gradient(
-        circle at 50% 62%,
-        color-mix(in srgb, var(--accent) 70%, var(--flame-core)),
-        color-mix(in srgb, var(--accent) 55%, var(--bg)) 75%
-      )
-      padding-box,
-    linear-gradient(150deg, var(--metal-hi), var(--metal-lo)) border-box;
+  background: color-mix(in srgb, var(--accent) 62%, var(--bg));
 }
-/* a lot: the lens is lit, with a pale heart */
+/* a lot: lit, with a crisp pale heart */
 .ln-heat__cell[data-level='3']::after {
-  background:
-    radial-gradient(circle at 50% 58%, var(--flame-core), var(--accent) 52%, color-mix(in srgb, var(--accent) 75%, var(--flame-deep)))
-      padding-box,
-    linear-gradient(150deg, color-mix(in srgb, var(--metal-hi) 70%, var(--flame-core)), var(--metal-lo)) border-box;
+  border-color: color-mix(in srgb, var(--metal-hi) 60%, var(--flame-core));
+  background: radial-gradient(circle, var(--flame-core) 0 26%, var(--accent) 27%);
 }
 /* days still to come: an empty ring */
 .ln-heat__cell[data-future]::after {
