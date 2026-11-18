@@ -2566,64 +2566,76 @@ ion-content {
   stroke: color-mix(in srgb, var(--flame-core) 55%, transparent);
 }
 
-/* ---------- Heatmap: small warm tiles in their sockets ---------- */
+/* ---------- Heatmap: a row of metal studs, all one size ---------- */
+/*
+ * Every day is the same round stud in the lantern's metal. What was done that day shows in
+ * the finish, not the size: dull iron, polished brass, warm copper, then hot ember-metal.
+ * Crisp edges, no blur, no motion.
+ */
 .ln-heat__cell,
 .ln-heat__cell[data-level],
 .ln-heat__cell[data-future] {
   position: relative;
   border: 0;
-  border-radius: 30%;
+  border-radius: 50%;
   background: none;
   box-shadow: none;
   opacity: 1;
   outline: none;
 }
-/* the socket every day sits in */
 .ln-heat__cell::before {
-  content: '';
-  position: absolute;
-  inset: 22%;
-  border-radius: 30%;
-  background: color-mix(in srgb, var(--surface-2) 90%, transparent);
+  content: none;
 }
-/* the day's light: a crisp dot that grows and deepens with what was done; no blur, no motion */
 .ln-heat__cell::after {
   content: '';
   position: absolute;
-  inset: 0;
-  border-radius: 30%;
-  background: var(--accent);
-  opacity: 0;
-  scale: 0.3;
-  transition:
-    opacity var(--dur-slow) var(--ease-out),
-    scale var(--dur-slow) var(--ease-out);
+  inset: 12%;
+  border-radius: 50%;
+  box-shadow:
+    inset 0 1px 0 var(--glass-shine),
+    0 1px 1.5px var(--lantern-shadow);
+  transition: background var(--dur-slow) var(--ease-out);
 }
+/* nothing that day: dull, unpolished iron */
+.ln-heat__cell[data-level='0']::after {
+  background: radial-gradient(
+    circle at 35% 30%,
+    color-mix(in srgb, var(--metal-lo) 60%, var(--surface-2)),
+    color-mix(in srgb, var(--metal-lo) 45%, var(--bg)) 75%
+  );
+  box-shadow: 0 1px 1px var(--lantern-shadow);
+  opacity: 0.5;
+}
+/* a little: polished brass */
 .ln-heat__cell[data-level='1']::after {
-  opacity: 0.4;
-  scale: 0.5;
+  background: radial-gradient(circle at 35% 30%, var(--metal-hi), var(--metal-lo) 80%);
 }
+/* some: warm copper */
 .ln-heat__cell[data-level='2']::after {
-  opacity: 0.7;
-  scale: 0.68;
+  background: radial-gradient(
+    circle at 35% 30%,
+    color-mix(in srgb, var(--metal-hi) 55%, var(--flame-core)),
+    color-mix(in srgb, var(--accent) 50%, var(--metal-lo)) 80%
+  );
 }
+/* a lot: metal heated to an ember */
 .ln-heat__cell[data-level='3']::after {
-  opacity: 1;
-  scale: 0.84;
+  background: radial-gradient(circle at 35% 30%, var(--flame-core), var(--accent) 50%, var(--flame-deep) 95%);
 }
-/* days still to come are only a faint ring */
-.ln-heat__cell[data-future]::before {
-  inset: 34%;
+/* days still to come: an empty ring where a stud will go */
+.ln-heat__cell[data-future]::after {
+  inset: 26%;
   background: none;
   box-shadow: none;
-  border: var(--hairline-w) solid var(--hairline);
+  border: var(--hairline-w) solid var(--hairline-strong);
 }
-/* today: an ember-coloured ring round its socket */
+/* today: an ember ring round its stud */
 .ln-heat__cell[data-today]::before {
-  inset: 0;
-  background: none;
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
   border: 1.5px solid var(--accent-text);
-  box-shadow: none;
 }
 .ln-heat__grid {
   gap: 3px;

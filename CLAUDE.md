@@ -298,7 +298,7 @@ Why each phase gets its model:
 
 ### P7 (dials and embers)
 - `ProgressRing` is an ember dial: a brass rim, a sunken track with twelve hour marks, an arc that brightens toward its end (a gradient in the ring's colour), and a small tip at the arc's leading end, turned with `--ring-fraction` so it travels with the fill. A full ring glows the steady gold and hides the tip; an empty ring shows no arc. Arc and tip draw in together on arrival. The centre stays clear: a glow inside the dial was tried and dropped, as it carried no meaning.
-- Heatmap days are crisp, still rounded-square tiles (30% radius) in small flat sockets: a tile grows and deepens with the day's level (1, 2, 3 or more), today is a plain ember-coloured outline, future days a faint outline. Every weekday is labelled down the side (M T W T F S S). Earlier tries, dropped: blurred breathing embers (strained the eye) and round dots (looked odd).
+- Heatmap days are round metal studs, all one size: the finish shows the day's level (dull iron at half strength for nothing, polished brass, warm copper, then ember-hot metal), using the lantern's `--metal-*` tokens. Crisp, no blur or motion. Today has an ember ring; future days an empty ring. Every weekday is labelled down the side (M T W T F S S). Earlier tries, dropped: blurred breathing embers (strained the eye), round dots growing with the level, and rounded-square tiles.
 
 ## Environment notes
 
