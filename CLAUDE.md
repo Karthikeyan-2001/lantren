@@ -251,7 +251,7 @@ Why each phase gets its model:
 - Permissions (notifications, exact alarms, boot) come from the local-notifications plugin's own manifest, merged at build time, so the app manifest is untouched. `INTERNET` stays because Capacitor adds it; the app makes no network calls.
 - Reminder small icon is a white flame vector, `ic_stat_lantern`, wired in `capacitor.config.ts` with the ember tint.
 - APKs are built online by `.github/workflows/android.yml` (Node 22, JDK 21): unit tests, web build, `cap sync`, `gradlew assembleDebug`, uploaded as the `lantern-debug-apk` artifact. Debug build only; no signing keys are stored in the repo.
-- Not yet done in P7: the accessibility audit, airplane-mode and console pass, hiding the status bar during focus, adaptive launcher icon and splash from the Lantern artwork, and trying any of it on a device.
+- Not yet done in P7: the accessibility audit, airplane-mode and console pass, hiding the status bar during focus, and trying any of it on a device.
 
 ### P7 (UI refinement)
 - Motion tokens added: `--ease-out` (soft landing for arrivals), `--ease-spring` (a slight overshoot, only for things under a finger: switch thumbs, the nav indicator, the segmented thumb, press release) and `--stagger` (45 ms). Presses scale to 0.97 in 90 ms and spring back.
@@ -302,6 +302,11 @@ Why each phase gets its model:
 
 ### P7 (capture button)
 - The capture button is seated inside the dock as its last control, after Today, Focus and Library (`.ln-nav__places` holds the three and the gliding indicator). It is a brass lens (`CaptureLens` in `Nav.tsx`, picked by the user from four drawn options): dark glass in a brass rim holding a small lit flame with a plus beneath, all from theme tokens; the flame lifts a little on hover. Dropped before it: a floating arch, a floating ember disc (read as a Material FAB) and a plain ember circle in the dock. On Capture and Review the button is left out and the dock spans the three places. Still three destinations.
+
+### P7 (Android icon and splash)
+- `npm run icons` also writes the Android launcher icons (legacy, round, and the adaptive foreground with the art inside the 66 dp safe circle) and every splash PNG, from the same arch-and-flame drawing as the PWA icons. The adaptive background is ink (`#14110F`).
+- Android 12+ splash: ink background with the adaptive foreground as its icon, then `AppTheme.NoActionBar`; no white flash.
+- The app name stays "Lantern" (`capacitor.config.ts` `appName`, `strings.xml` `app_name`); it was already set.
 
 ## Environment notes
 

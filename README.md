@@ -99,5 +99,5 @@ src/focus     focus timer rules, ambient sound, screen wake lock
 src/progress  streak, heatmap, weekly focus and review statistics (pure)
 src/ui        Lantern's own components: Flame, Lantern, Hearth, Button, fields, Choice, ProgressRing, Nav, Screen
 src/pages     screens; StyleGuide.tsx shows every token and component
-scripts       make-icons.mjs draws the app icons
+scripts       make-icons.mjs draws the PWA icons and the Android launcher icons and splash
 ```
