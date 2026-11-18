@@ -2566,13 +2566,13 @@ ion-content {
   stroke: color-mix(in srgb, var(--flame-core) 55%, transparent);
 }
 
-/* ---------- Heatmap: a night of small embers ---------- */
+/* ---------- Heatmap: small warm tiles in their sockets ---------- */
 .ln-heat__cell,
 .ln-heat__cell[data-level],
 .ln-heat__cell[data-future] {
   position: relative;
   border: 0;
-  border-radius: 50%;
+  border-radius: 30%;
   background: none;
   box-shadow: none;
   opacity: 1;
@@ -2583,7 +2583,7 @@ ion-content {
   content: '';
   position: absolute;
   inset: 22%;
-  border-radius: 50%;
+  border-radius: 30%;
   background: color-mix(in srgb, var(--surface-2) 90%, transparent);
 }
 /* the day's light: a crisp dot that grows and deepens with what was done; no blur, no motion */
@@ -2591,7 +2591,7 @@ ion-content {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 50%;
+  border-radius: 30%;
   background: var(--accent);
   opacity: 0;
   scale: 0.3;

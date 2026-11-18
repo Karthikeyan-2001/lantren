@@ -18,6 +18,17 @@ export interface HeatmapCell {
  * or it is not, in three warm steps. The whole grid is one picture to a screen reader,
  * described by `label`; the squares themselves say nothing.
  */
+/** Monday at the top, as the grid runs. */
+const WEEKDAYS = [
+  ['mon', 'M'],
+  ['tue', 'T'],
+  ['wed', 'W'],
+  ['thu', 'T'],
+  ['fri', 'F'],
+  ['sat', 'S'],
+  ['sun', 'S'],
+] as const;
+
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const;
 
 /** A month name over the first week of each month (and over the first column). */
@@ -48,13 +59,9 @@ export function Heatmap({ cells, weeks, label }: { cells: readonly HeatmapCell[]
           ))}
         </div>
         <div className="ln-heat__days" aria-hidden="true">
-          <span>M</span>
-          <span />
-          <span>W</span>
-          <span />
-          <span>F</span>
-          <span />
-          <span />
+          {WEEKDAYS.map(([key, letter]) => (
+            <span key={key}>{letter}</span>
+          ))}
         </div>
         <div className="ln-heat__grid" role="img" aria-label={label}>
           {cells.map((c, i) => (
