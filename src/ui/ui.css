@@ -1590,7 +1590,7 @@ select.ln-field__control {
 }
 .ln-focus__preview {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   gap: var(--sp-5);
 }

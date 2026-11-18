@@ -315,6 +315,9 @@ Why each phase gets its model:
 
 - Scroll bars are hidden on touch screens (`pointer: coarse`) and thin in `--hairline-strong` with a mouse, on `ion-content::part(scroll)`, `html` and `body` (`base.css`).
 
+- Focus keeps one `IonPage` for every phase (set-up, session, done, break) and swaps only what is inside it; set-up uses `ScreenBody`, the `Screen` without its Ionic page. Swapping one `IonPage` for another without navigating left the new one `ion-page-invisible` on Android, so the screen went blank after "End here". The early-stop e2e test checks the page element survives each phase.
+- On Focus set-up the timer is centred on the lantern, not aligned to its foot.
+
 ## Environment notes
 
 - Windows 11, Node 26. No Java or Android SDK installed, so Android builds wait for Android Studio.

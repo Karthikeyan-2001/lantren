@@ -20,7 +20,7 @@ import {
 import { ambient, useFocus, useNow } from '../focus/useFocus';
 import { toLocalDate } from '../scheduler';
 import { Hearth } from '../ui/Hearth';
-import { Screen } from '../ui/Screen';
+import { ScreenBody } from '../ui/Screen';
 import { Button, Choice, RangeField, SelectField, TextField, Toggle } from '../ui/controls';
 
 type LengthChoice = `${number}` | 'custom';
@@ -80,38 +80,37 @@ export function FocusPage() {
     begin({ minutes: settings.focusMinutes, topicId: topic?.id, trackId });
   };
 
-  if (phase === 'idle') {
-    return (
-      <Setup
-        settings={settings}
-        tracks={live}
-        topics={linkable}
-        trackId={trackId}
-        topicId={topic?.id ?? ''}
-        headingRef={headingRef}
-        onTrack={(id) => {
-          setChosenTrackId(id);
-          if (topic && topic.trackId !== id) setTopicId('');
-        }}
-        onTopic={setTopicId}
-        onSave={save}
-        onBegin={start}
-      />
-    );
-  }
-
+  // One IonPage for every phase: only what is inside it changes (see ScreenBody).
   return (
     <IonPage>
       <IonContent>
-        {/* Any tap unlocks sound, for a session picked up after the app was closed. */}
-        <main className="ln-focus" data-phase={phase} onPointerDown={() => ambient.unlock()}>
-          {phase === 'focus' && <Running headingRef={headingRef} settings={settings} onSave={save} />}
-          {phase === 'done' && <Done headingRef={headingRef} />}
-          {phase === 'break' && <Break headingRef={headingRef} />}
-          {phase === 'breakOver' && (
-            <BreakOver headingRef={headingRef} minutes={settings.focusMinutes} onBegin={start} />
-          )}
-        </main>
+        {phase === 'idle' ? (
+          <Setup
+            settings={settings}
+            tracks={live}
+            topics={linkable}
+            trackId={trackId}
+            topicId={topic?.id ?? ''}
+            headingRef={headingRef}
+            onTrack={(id) => {
+              setChosenTrackId(id);
+              if (topic && topic.trackId !== id) setTopicId('');
+            }}
+            onTopic={setTopicId}
+            onSave={save}
+            onBegin={start}
+          />
+        ) : (
+          /* Any tap unlocks sound, for a session picked up after the app was closed. */
+          <main className="ln-focus" data-phase={phase} onPointerDown={() => ambient.unlock()}>
+            {phase === 'focus' && <Running headingRef={headingRef} settings={settings} onSave={save} />}
+            {phase === 'done' && <Done headingRef={headingRef} />}
+            {phase === 'break' && <Break headingRef={headingRef} />}
+            {phase === 'breakOver' && (
+              <BreakOver headingRef={headingRef} minutes={settings.focusMinutes} onBegin={start} />
+            )}
+          </main>
+        )}
       </IonContent>
     </IonPage>
   );
@@ -171,7 +170,7 @@ function Setup({
   const byRecent = [...topics].sort((a, b) => b.studiedOn.localeCompare(a.studiedOn));
 
   return (
-    <Screen kicker="focus" title="One flame, one thing" lede="Pick a length and begin. Everything else can wait.">
+    <ScreenBody kicker="focus" title="One flame, one thing" lede="Pick a length and begin. Everything else can wait.">
       <form
         className="ln-form"
         onSubmit={(e: FormEvent) => {
@@ -266,7 +265,7 @@ function Setup({
           <p className="ln-form__preview">The screen stays awake while the flame burns.</p>
         </div>
       </form>
-    </Screen>
+    </ScreenBody>
   );
 }
 

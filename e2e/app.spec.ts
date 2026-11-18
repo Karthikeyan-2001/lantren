@@ -268,11 +268,20 @@ test('ending a focus session early keeps what was done; a false start keeps noth
   await page.getByLabel('Custom length').fill('3');
   await expect(page.getByRole('button', { name: 'Begin' })).toBeDisabled();
   await page.getByLabel('Custom length').fill('40');
+  // Every phase stays inside one Ionic page. A new page swapped in without navigating
+  // stays hidden on Android, which left the screen blank after "End here".
+  const focusPage = page.locator('ion-router-outlet > .ion-page:not(.ion-page-hidden)');
+  await focusPage.evaluate((el) => el.setAttribute('data-e2e-mark', ''));
+  const samePage = page.locator('ion-router-outlet > .ion-page[data-e2e-mark]');
+
   await page.getByRole('button', { name: 'Begin' }).click();
   await expect(page.getByRole('timer')).toHaveText(/^(40:00|39:\d\d)$/);
+  await expect(samePage).toHaveCount(1);
 
   await page.getByRole('button', { name: 'End here' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'One flame, one thing' })).toBeVisible();
+  await expect(samePage).toHaveCount(1);
+  await expect(samePage).not.toHaveClass(/ion-page-invisible/);
   expect(await storedFocusSessions(page)).toHaveLength(0);
 
   await page.getByRole('button', { name: 'Begin' }).click();
