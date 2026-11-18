@@ -14,6 +14,12 @@ const STATUS_WORDS: Partial<Record<Topic['status'], string>> = {
   leaky: 'leaky, coming back soon',
 };
 
+const MENU = [
+  { to: '/progress', label: 'Your progress', hint: 'Streak, study days and weekly focus' },
+  { to: '/tracks', label: 'Tracks', hint: 'Names, colours and weekly targets' },
+  { to: '/settings', label: 'Settings', hint: 'Reminders, theme and your data' },
+] as const;
+
 export function LibraryPage() {
   const today = useToday();
   const tracks = useLantern((s) => s.tracks);
@@ -86,15 +92,23 @@ export function LibraryPage() {
         </section>
       )}
 
-      <Link to="/progress" className="ln-btn ln-btn--quiet ln-btn--block">
-        Your progress
-      </Link>
-      <Link to="/tracks" className="ln-btn ln-btn--quiet ln-btn--block">
-        Tracks
-      </Link>
-      <Link to="/settings" className="ln-btn ln-btn--quiet ln-btn--block">
-        Settings
-      </Link>
+      <nav aria-label="More">
+        <ul className="ln-menu">
+          {MENU.map((m) => (
+            <li key={m.to}>
+              <Link to={m.to} className="ln-menu__link">
+                <span className="ln-menu__label">
+                  {m.label}
+                  <span className="ln-menu__hint">{m.hint}</span>
+                </span>
+                <svg className="ln-row__go" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M9 6l6 6-6 6" />
+                </svg>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
       <Link to="/styleguide" className="ln-btn ln-btn--ghost ln-btn--block">
         Open the style guide
       </Link>

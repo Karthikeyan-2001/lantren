@@ -13,7 +13,7 @@ A quiet focus-and-study app built around the 1-4-7 spaced revision method. You l
 | P4 | Notifications | done |
 | P5 | Focus mode and ambient sound | done |
 | P6 | Progress, tracks and weekly goals, export and import | done |
-| P7 | Polish, accessibility pass, Android build | in progress (Android platform and cloud APK build added; audit not yet done) |
+| P7 | Polish, accessibility pass, Android build | in progress (Android platform, cloud APK build and UI refinement done; accessibility audit not yet done) |
 
 ## Stack and decisions
 

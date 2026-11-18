@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 const icon = (children: ReactNode) => (
@@ -51,23 +51,25 @@ const belongsTo = (destination: string, pathname: string): boolean =>
 export function Nav({ hidden = false }: { hidden?: boolean }) {
   const { pathname } = useLocation();
   if (hidden) return null;
+  const active = DESTINATIONS.findIndex((d) => belongsTo(d.to, pathname));
+  const capture = !pathname.startsWith('/capture') && !pathname.startsWith('/review');
   return (
     <>
-      <nav className="ln-nav" aria-label="Main">
-        {DESTINATIONS.map((d) => (
-          <Link
-            key={d.to}
-            to={d.to}
-            replace
-            className="ln-nav__link"
-            aria-current={belongsTo(d.to, pathname) ? 'page' : undefined}
-          >
+      <div className="ln-dock-scrim" aria-hidden="true" />
+      <nav
+        className={capture ? 'ln-nav' : 'ln-nav ln-nav--solo'}
+        aria-label="Main"
+        style={{ '--nav-index': Math.max(active, 0) } as CSSProperties}
+      >
+        <span className="ln-nav__indicator" data-off={active < 0 || undefined} aria-hidden="true" />
+        {DESTINATIONS.map((d, i) => (
+          <Link key={d.to} to={d.to} replace className="ln-nav__link" aria-current={i === active ? 'page' : undefined}>
             {d.icon}
             {d.label}
           </Link>
         ))}
       </nav>
-      {!pathname.startsWith('/capture') && !pathname.startsWith('/review') && (
+      {capture && (
         <Link to="/capture" className="ln-fab" aria-label="Capture what you studied">
           {icon(<path d="M12 5v14M5 12h14" strokeWidth="2" />)}
         </Link>

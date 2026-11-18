@@ -150,8 +150,29 @@ export function StyleGuidePage() {
         ← Library
       </Link>
 
-      <Section title="Theme" note="Dark first. Paper is the daylight version.">
+      <Section title="Theme" note="Dark first. Paper is the daylight version. Short fixed sets are a segmented track.">
         <Choice legend="Appearance" options={THEMES} value={choice} onChange={setChoice} />
+      </Section>
+
+      <Section title="Menu" note="A few places to go, in one card. Library ends with one.">
+        <ul className="ln-menu">
+          {[
+            ['Your progress', 'Streak, study days and weekly focus'],
+            ['Settings', 'Reminders, theme and your data'],
+          ].map(([label, hint]) => (
+            <li key={label}>
+              <Link to="/styleguide" className="ln-menu__link">
+                <span className="ln-menu__label">
+                  {label}
+                  <span className="ln-menu__hint">{hint}</span>
+                </span>
+                <svg className="ln-row__go" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M9 6l6 6-6 6" />
+                </svg>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </Section>
 
       <Section title="Palette" note="Seven colours. Ember is for the one thing that matters on a screen.">

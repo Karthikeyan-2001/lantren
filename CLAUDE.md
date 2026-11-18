@@ -22,7 +22,7 @@ The user is a working software engineer in Chennai (IST) upskilling toward AI en
 | P4 | Notifications | done (not yet run on a device) | `5d17047` | Fable 5.2 (used) |
 | P5 | Focus mode and ambient sound | done (sound and screen lock not yet tried on a phone) | `719b607` | Fable 5.2 (used) |
 | P6 | Progress, tracks and weekly goals, export and import | done (export not yet tried on a phone) | `27da090` | Sonnet 5.5 (used) |
-| P7 | Polish, accessibility pass, Android build | in progress (Android platform and cloud APK build added; audit not yet done) | | Opus 5.5 |
+| P7 | Polish, accessibility pass, Android build | in progress (Android platform, cloud APK build and UI refinement done; accessibility audit not yet done) | | Opus 5.5 |
 
 ## Which model to use
 
@@ -252,6 +252,18 @@ Why each phase gets its model:
 - Reminder small icon is a white flame vector, `ic_stat_lantern`, wired in `capacitor.config.ts` with the ember tint.
 - APKs are built online by `.github/workflows/android.yml` (Node 22, JDK 21): unit tests, web build, `cap sync`, `gradlew assembleDebug`, uploaded as the `lantern-debug-apk` artifact. Debug build only; no signing keys are stored in the repo.
 - Not yet done in P7: the accessibility audit, airplane-mode and console pass, hiding the status bar during focus, adaptive launcher icon and splash from the Lantern artwork, and trying any of it on a device.
+
+### P7 (UI refinement)
+- Motion tokens added: `--ease-out` (soft landing for arrivals), `--ease-spring` (a slight overshoot, only for things under a finger: switch thumbs, the nav indicator, the segmented thumb, press release) and `--stagger` (45 ms). Presses scale to 0.97 in 90 ms and spring back.
+- Elevation tokens added per theme: `--edge-light` (a faint lit top edge), `--shadow-1` (cards), `--shadow-float` (the dock), `--scrim`. Shadows are warm-tinted, never black. Arch, card, offer, notice, week card and stats share one recipe.
+- Screens arrive as a cascade: each direct child of `.ln-screen` and each list row rises a beat after the one above. All of it collapses under reduced motion through the existing global rule.
+- `Choice` picks its own shape: up to 5 options with short labels (9 letters or fewer) and no colours is a segmented track with a thumb that glides to the choice; anything else is chips sized to their labels, tinted with the option's colour (or ember) when chosen. The old solid cream selected state is gone. The `fit` prop now just forces chips.
+- The dock: the nav has a gliding indicator and an ember icon for the current place, a blurred surface with a soft float shadow, and a scrim under it so content fades out instead of colliding. It centres itself on screens without the capture button.
+- Row titles are a step smaller (17 px), clamped to two lines; meta is micro size. Dividers on tappable rows are inset so they never bend at the rounded corners. Group heads lost their underline; counts are small mono badges.
+- Disclosures (Capture's optional fields, Tracks) glide open with `::details-content` and `interpolate-size`; their marker is a chevron that turns. Browsers without support just open instantly.
+- Library's three outlined buttons became one menu card (`.ln-menu`) with a hint line per place. Specimen on the style-guide page.
+- Screen kickers use `--accent-text`. Headings use Fraunces at weight 400 with optical sizing and slightly tighter tracking.
+- Heatmap sits in its own surface, empty days are soft wells instead of outlines, gaps are 3 px. Meters grow in from the left on arrival.
 
 ## Environment notes
 

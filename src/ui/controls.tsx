@@ -149,21 +149,35 @@ interface ChoiceProps<T extends string> {
   fit?: boolean;
 }
 
-/** A radio group drawn as pills. Arrow keys move between options, as with any radio group. */
+/** Short, fixed sets read best as one segmented track; anything longer or coloured as chips. */
+const SEGMENT_MAX_OPTIONS = 5;
+const SEGMENT_MAX_LABEL = 9;
+const isSegmented = (options: readonly { label: string; colour?: string }[]): boolean =>
+  options.length <= SEGMENT_MAX_OPTIONS && options.every((o) => !o.colour && o.label.length <= SEGMENT_MAX_LABEL);
+
+/**
+ * A radio group. Short fixed sets (length, theme, confidence) are drawn as a segmented track
+ * with a thumb that glides to the chosen option; longer or coloured sets as chips that wrap.
+ * Arrow keys move between options, as with any radio group.
+ */
 export function Choice<T extends string>({ legend, options, value, onChange, hint, fit }: ChoiceProps<T>) {
   const name = useId();
+  const segmented = !fit && isSegmented(options);
+  const index = options.findIndex((o) => o.value === value);
+  const kind = segmented ? 'ln-choice--segmented' : 'ln-choice--chips';
   return (
-    <fieldset
-      className={fit ? 'ln-choice ln-choice--fit' : 'ln-choice'}
-      aria-describedby={hint ? `${name}-hint` : undefined}
-    >
+    <fieldset className={`ln-choice ${kind}`} aria-describedby={hint ? `${name}-hint` : undefined}>
       <legend>{legend}</legend>
       {hint && (
         <p id={`${name}-hint`} className="ln-choice__hint">
           {hint}
         </p>
       )}
-      <div className="ln-choice__row">
+      <div
+        className="ln-choice__row"
+        style={segmented ? ({ '--count': options.length, '--index': Math.max(index, 0) } as CSSProperties) : undefined}
+      >
+        {segmented && <span className="ln-choice__thumb" data-on={index >= 0 || undefined} aria-hidden="true" />}
         {options.map((option) => (
           <label key={option.value} className="ln-choice__item">
             <input
