@@ -81,6 +81,12 @@
   --glow-steady: rgba(255, 190, 120, 0.3);
   --flame-core: #ffd9a8;
   --flame-deep: #c23a1c;
+  /* the lantern: aged bronze, dark glass */
+  --metal-hi: #8a7562;
+  --metal-lo: #3a3029;
+  --glass: rgba(10, 8, 7, 0.55);
+  --glass-shine: rgba(255, 236, 214, 0.1);
+  --lantern-shadow: rgba(0, 0, 0, 0.45);
   --grain-opacity: 0.04;
   /* elevation: warm-tinted, low and soft; the top edge catches a little lamplight */
   --edge-light: inset 0 1px 0 rgba(255, 236, 214, 0.045);
@@ -107,6 +113,11 @@
   --glow-steady: rgba(226, 150, 70, 0.26);
   --flame-core: #ffe6c4;
   --flame-deep: #d2441f;
+  --metal-hi: #b59877;
+  --metal-lo: #6e5641;
+  --glass: rgba(255, 244, 228, 0.78);
+  --glass-shine: rgba(255, 255, 255, 0.85);
+  --lantern-shadow: rgba(92, 64, 36, 0.22);
   --grain-opacity: 0.035;
   --edge-light: inset 0 1px 0 rgba(255, 255, 255, 0.55);
   --shadow-1: 0 1px 2px rgba(92, 64, 36, 0.08), 0 10px 24px -16px rgba(92, 64, 36, 0.35);

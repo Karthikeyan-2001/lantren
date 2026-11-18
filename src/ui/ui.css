@@ -461,111 +461,135 @@
 
 /* ---------- Lantern: one topic, two flames ---------- */
 .ln-lantern {
-  --lantern-w: 96px;
-  --lantern-pad: 7px;
+  --lantern-w: 76px;
   position: relative;
   display: inline-flex;
   flex-direction: column;
-  align-items: stretch;
-  gap: 5px;
+  align-items: center;
+  gap: 2px;
   width: var(--lantern-w);
-  margin-top: 12px;
-  padding: var(--lantern-pad) var(--lantern-pad) 5px;
-  border-radius: calc(var(--lantern-w) / 2) calc(var(--lantern-w) / 2) 12px 12px;
-  border: var(--hairline-w) solid var(--hairline-strong);
-  background: linear-gradient(180deg, var(--surface-2), var(--surface) 70%);
-  box-shadow: var(--edge-light), var(--shadow-1);
   flex: none;
-  transition: border-color var(--dur-slow) var(--ease-settle);
 }
-/* the handle: a loop above the roof */
-.ln-lantern::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: -12px;
-  width: 18px;
-  height: 14px;
-  margin-left: -9px;
-  border: 1.5px solid var(--hairline-strong);
-  border-bottom: 0;
-  border-radius: 10px 10px 0 0;
-}
-/* the finial, in the track's colour */
-.ln-lantern::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: -4px;
-  width: 8px;
-  height: 8px;
-  margin-left: -4px;
-  border-radius: 50%;
-  background: var(--lantern-colour, var(--ash));
-  box-shadow: 0 0 0 2px var(--bg);
-}
-.ln-lantern__glass {
+.ln-lantern__body {
   position: relative;
-  isolation: isolate;
-  display: flex;
-  justify-content: center;
-  padding: 24px 4px 8px;
-  border-radius: calc(var(--lantern-w) / 2 - var(--lantern-pad)) calc(var(--lantern-w) / 2 - var(--lantern-pad)) 6px 6px;
-  border: var(--hairline-w) solid var(--hairline);
-  background: color-mix(in srgb, var(--bg) 55%, var(--surface));
-  overflow: hidden;
+  display: block;
+  width: 100%;
+  aspect-ratio: 100 / 126;
+  transform-origin: 50% 4%;
 }
-/* light thrown on the glass; warmer as more of its flames are lit */
-.ln-lantern__glass::before {
-  content: '';
+.ln-lantern__frame {
   position: absolute;
   inset: 0;
-  z-index: -1;
-  background: radial-gradient(85% 70% at 50% 92%, var(--glow), transparent 75%);
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 3px 4px var(--lantern-shadow));
+}
+/* the flames stand inside the glass chamber (x 22 to 78, y 36 to 105 of the drawing) */
+.ln-lantern__flames {
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  top: 30%;
+  bottom: 18.5%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+}
+
+/* metal, from the theme */
+.ln-lantern__metal-lo {
+  stop-color: var(--metal-lo);
+}
+.ln-lantern__metal-hi {
+  stop-color: var(--metal-hi);
+}
+.ln-lantern__wire {
+  fill: none;
+  stroke: var(--metal-hi);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+.ln-lantern__band {
+  fill: var(--lantern-colour, var(--ash));
+}
+/* inside the glass the flames' own halos are left out: the light on the glass does that job */
+.ln-lantern .ln-flame__glow {
+  display: none;
+}
+.ln-lantern__glass {
+  fill: var(--glass);
+}
+.ln-lantern__shine {
+  fill: var(--glass-shine);
+}
+.ln-lantern__mullion {
+  stroke: var(--metal-lo);
+  stroke-width: 1.2;
+  opacity: 0.7;
+}
+
+/* light thrown on the glass; warmer as more of its flames are lit */
+.ln-lantern__glow-in {
+  stop-color: var(--accent);
+  stop-opacity: 0.55;
+}
+.ln-lantern__glow-out {
+  stop-color: var(--accent);
+  stop-opacity: 0;
+}
+.ln-lantern__light {
   opacity: 0;
   transition: opacity var(--dur-slow) var(--ease-settle);
 }
-/* a thin mullion between the two panes */
-.ln-lantern__glass::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 22%;
-  bottom: 0;
-  border-left: var(--hairline-w) solid var(--hairline);
-}
-.ln-lantern[data-glow='ember'] .ln-lantern__glass::before {
+.ln-lantern[data-glow='ember'] .ln-lantern__light {
   opacity: 0.35;
+  animation: ln-ember 3.2s ease-in-out infinite alternate;
 }
-.ln-lantern[data-glow='half'] .ln-lantern__glass::before {
-  opacity: 0.65;
+.ln-lantern[data-glow='half'] .ln-lantern__light {
+  opacity: 0.7;
 }
-.ln-lantern[data-glow='full'] .ln-lantern__glass::before {
+.ln-lantern[data-glow='full'] .ln-lantern__light {
   opacity: 1;
 }
-.ln-lantern__flames {
-  display: flex;
-  gap: var(--sp-5);
-  align-items: flex-end;
+@keyframes ln-ember {
+  from {
+    opacity: 0.2;
+  }
+  to {
+    opacity: 0.45;
+  }
 }
+/* locked in: the light turns the steady gold and the band glows */
+.ln-lantern[data-locked='true'] .ln-lantern__glow-in {
+  stop-color: var(--flame-core);
+  stop-opacity: 0.6;
+}
+.ln-lantern[data-locked='true'] .ln-lantern__band {
+  filter: drop-shadow(0 0 2px var(--lantern-colour, var(--ash)));
+}
+
 .ln-lantern__labels {
   display: flex;
   justify-content: space-around;
+  width: 56%;
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   line-height: 1.2;
   color: var(--text-muted);
 }
-.ln-lantern[data-locked='true'] {
-  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+
+/* a full-size lantern with anything lit sways a little on its ring */
+.ln-lantern:not(.ln-lantern--compact):is([data-glow='half'], [data-glow='full']) .ln-lantern__body {
+  animation: ln-swing 5.5s ease-in-out infinite alternate;
 }
-.ln-lantern[data-locked='true']::after {
-  box-shadow:
-    0 0 0 2px var(--bg),
-    0 0 10px var(--glow-steady);
-}
-.ln-lantern[data-locked='true'] .ln-lantern__glass::before {
-  background: radial-gradient(90% 75% at 50% 90%, var(--glow-steady), transparent 78%);
+@keyframes ln-swing {
+  from {
+    rotate: -1.6deg;
+  }
+  to {
+    rotate: 1.6deg;
+  }
 }
 
 /* ---------- Progress ring ---------- */
@@ -943,30 +967,7 @@ textarea.ln-field__control {
 /* ---------- Compact lantern, for list rows ---------- */
 .ln-lantern--compact {
   --lantern-w: 62px;
-  --lantern-pad: 5px;
-  gap: 3px;
-  margin-top: 9px;
-  border-radius: calc(var(--lantern-w) / 2) calc(var(--lantern-w) / 2) 10px 10px;
-}
-.ln-lantern--compact::before {
-  top: -9px;
-  width: 13px;
-  height: 10px;
-  margin-left: -6.5px;
-  border-width: 1.25px;
-}
-.ln-lantern--compact::after {
-  top: -3px;
-  width: 6px;
-  height: 6px;
-  margin-left: -3px;
-}
-.ln-lantern--compact .ln-lantern__glass {
-  padding: 16px 2px 6px;
-  border-radius: calc(var(--lantern-w) / 2 - var(--lantern-pad)) calc(var(--lantern-w) / 2 - var(--lantern-pad)) 5px 5px;
-}
-.ln-lantern--compact .ln-lantern__flames {
-  gap: var(--sp-3);
+  gap: 1px;
 }
 .ln-lantern--compact .ln-lantern__labels {
   font-size: 0.625rem;

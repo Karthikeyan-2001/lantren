@@ -274,7 +274,7 @@ Why each phase gets its model:
 ### P7 (lanterns and window arch)
 - `.ln-arch` is no longer a dome: a low elliptical window arch (rise `clamp(64px, 22vw, 104px)`) with an inner hairline frame 7 px in, so it looks like a window at any width. `--r-arch` is still used for tall, narrow shapes (Hearth, style-guide specimens).
 - `EmptyState` shows a lit flame (40 px, so it is live) standing on a sill inside a soft round halo.
-- `Lantern` is drawn as a lantern: a handle loop, a finial in the track colour, a glass pane with a mullion between the two flames, and a base with d4 and d7. The glass warms with `data-glow` (none, ember while waiting, half, full); locked in uses the steady glow and an ember rim.
+- `Lantern` is an SVG carriage lantern (viewBox 100 x 126): hook and ring, a domed roof with a finial, a band in the track colour, a glass chamber between two bronze pillars with a glint and a mullion, and a footed base; d4 and d7 sit under it. The two `Flame`s are laid over the glass (their own halos are hidden there) and the light on the glass follows `data-glow` (none, a slow ember pulse while waiting, half, full; gold when locked in). New per-theme tokens: `--metal-hi`, `--metal-lo`, `--glass`, `--glass-shine`, `--lantern-shadow`. Full size is 76 px and sways a little on its ring when lit; list rows use 62 px and stay still.
 
 ## Environment notes
 

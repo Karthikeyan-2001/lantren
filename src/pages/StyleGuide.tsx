@@ -222,7 +222,7 @@ export function StyleGuidePage() {
         </ul>
       </Section>
 
-      <Section title="Lanterns" note="One topic, one window. The cap carries the track colour.">
+      <Section title="Lanterns" note="One topic, one lantern. The band under the roof carries the track colour.">
         <div className="sg-row">
           <Lantern day4="waiting" day7="unlit" colour="var(--track-wheat)" />
           <Lantern day4="lit" day7="waiting" colour="var(--track-moss)" />
