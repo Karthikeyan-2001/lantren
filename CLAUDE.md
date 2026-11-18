@@ -265,6 +265,12 @@ Why each phase gets its model:
 - Screen kickers use `--accent-text`. Headings use Fraunces at weight 400 with optical sizing and slightly tighter tracking.
 - Heatmap sits in its own surface, empty days are soft wells instead of outlines, gaps are 3 px. Meters grow in from the left on arrival.
 
+### P7 (living flame)
+- The flame is hand-built SVG and CSS, not Lottie: no player library, no animation files, it follows the theme tokens and still dims with `level`.
+- Layers: glow, outline, fire (a gradient from the new `--flame-deep` token through ember to the tip), a lighter inner tongue, a pale core. Each moves on its own rhythm (2.9 s, 1.9 s, 1.3 s), so the loop never looks obvious.
+- Flames 40 px and wider are "live": the outline morphs (CSS `d: path()`), the core pulses, the glow breathes and two small sparks rise now and then, fading as the flame burns down. Smaller flames (list rows, lanterns) only let the inner tongue breathe, to keep long lists calm and cheap to draw.
+- Browsers without CSS `d` animation (Safari) keep the still outline with the other layers moving. Reduced motion stops everything through the global rule.
+
 ## Environment notes
 
 - Windows 11, Node 26. No Java or Android SDK installed, so Android builds wait for Android Studio.
