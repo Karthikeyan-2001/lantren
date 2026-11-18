@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useLantern } from '../data/store';
 import type { Review } from '../data/types';
 import { useToday } from '../data/useToday';
-import { countWord, dayMarkLabel, lanternFlames, relativeDay, trackColour } from '../data/view';
+import { countWord, dayMarkLabel, lanternFlames, longDate, relativeDay, trackColour } from '../data/view';
 import { hoursText, weekLine } from '../progress/copy';
 import { weeklyFocus } from '../progress/stats';
 import { enableReminders, useReminderStatus } from '../reminders/useReminders';
@@ -55,14 +55,14 @@ export function TodayPage() {
 
   if (status === 'loading')
     return (
-      <Screen kicker="today" title="Today">
+      <Screen kicker={longDate(today)} title="Today">
         {null}
       </Screen>
     );
 
   if (status === 'error') {
     return (
-      <Screen kicker="today" title="The desk is stuck">
+      <Screen kicker={longDate(today)} title="The desk is stuck">
         <EmptyState title="Storage did not open">
           <p>Everything lives on this device. Closing and reopening Lantern usually sorts it out.</p>
         </EmptyState>
@@ -73,7 +73,7 @@ export function TodayPage() {
   if (topics.length === 0) {
     return (
       <Screen
-        kicker="today"
+        kicker={longDate(today)}
         title="Nothing waiting yet"
         lede="A quiet desk. Reviews will gather here on day 4 and day 7."
       >
@@ -116,7 +116,7 @@ export function TodayPage() {
   };
 
   return (
-    <Screen kicker="today" title={title} lede={lede}>
+    <Screen kicker={longDate(today)} title={title} lede={lede}>
       {notice}
       <ReminderOffer />
 

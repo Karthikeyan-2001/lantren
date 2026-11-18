@@ -36,8 +36,7 @@ export function ProgressPage() {
         ← Today
       </Link>
 
-      <section className="ln-section" aria-label="Streak">
-        <hr className="ln-rule" />
+      <section className="ln-section ln-panel ln-panel--warm" aria-label="Streak">
         <h2>A gentle streak</h2>
         <div className="ln-streak">
           <Hearth mood={streak.todayDone ? 'ready' : streak.days > 0 ? 'held' : 'dark'} mini />
@@ -49,8 +48,7 @@ export function ProgressPage() {
         <p className="ln-small ln-muted">{streakLine(streak)}</p>
       </section>
 
-      <section className="ln-section" aria-label="Study days">
-        <hr className="ln-rule" />
+      <section className="ln-section ln-panel" aria-label="Study days">
         <h2>The last twelve weeks</h2>
         <Heatmap cells={map.cells} weeks={map.weeks} label={heatLabel} />
         <p className="ln-small ln-muted" aria-hidden="true">
@@ -58,8 +56,7 @@ export function ProgressPage() {
         </p>
       </section>
 
-      <section className="ln-section" aria-label="Focus this week">
-        <hr className="ln-rule" />
+      <section className="ln-section ln-panel" aria-label="Focus this week">
         <h2>Focus this week</h2>
         <p className="ln-small ln-muted">{weekLine(week)}</p>
         <div>
@@ -95,8 +92,7 @@ export function ProgressPage() {
         </div>
       </section>
 
-      <section className="ln-section" aria-label="Reviews">
-        <hr className="ln-rule" />
+      <section className="ln-section ln-panel" aria-label="Reviews">
         <h2>Reviews</h2>
         <dl className="ln-stats">
           <Stat value={words.value} label="Reviews done" note={words.note} />

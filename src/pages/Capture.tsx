@@ -7,8 +7,9 @@ import { TOPIC_KINDS, type Topic, type TopicKind } from '../data/types';
 import { useToday } from '../data/useToday';
 import { KIND_LABELS, shortDate, trackColour } from '../data/view';
 import { addDays, createReviews, isLocalDate, type LocalDate } from '../scheduler';
+import { Flame } from '../ui/Flame';
 import { Screen } from '../ui/Screen';
-import { Button, Choice, TextArea, TextField } from '../ui/controls';
+import { Button, Choice, FlameScale, TextArea, TextField } from '../ui/controls';
 
 const KIND_OPTIONS = TOPIC_KINDS.map((value) => ({ value, label: KIND_LABELS[value] }));
 const CONFIDENCE_OPTIONS = (['1', '2', '3', '4', '5'] as const).map((value) => ({ value, label: value }));
@@ -130,6 +131,7 @@ export function CapturePage() {
           enterKeyHint="done"
           autoComplete="off"
           maxLength={200}
+          className="ln-field__control ln-field__control--hero"
         />
 
         <Choice
@@ -184,9 +186,8 @@ export function CapturePage() {
           </>
         )}
 
-        <Choice
+        <FlameScale
           legend="How sure do you feel?"
-          hint="1 is shaky, 5 is you could teach it."
           options={CONFIDENCE_OPTIONS}
           value={confidence}
           onChange={setConfidence}
@@ -195,6 +196,7 @@ export function CapturePage() {
         <TextArea
           label="Notes"
           placeholder="a few lines in your own words, for day 4 you"
+          className="ln-field__control ln-field__control--lined"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
         />
@@ -228,6 +230,7 @@ export function CapturePage() {
 
         <div className="ln-form__actions">
           <Button type="submit" variant="ember" block disabled={saving || !trackId}>
+            {!saving && <Flame state="lit" size={14} />}
             {saving ? 'Saving' : 'Light it'}
           </Button>
           {saveError ? (

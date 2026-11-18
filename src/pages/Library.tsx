@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useLantern } from '../data/store';
@@ -59,6 +59,7 @@ export function LibraryPage() {
         return (
           <section key={track.id} className="ln-group" aria-label={track.name}>
             <header className="ln-group__head">
+              <span className="ln-orb" style={{ '--orb': trackColour(track) } as CSSProperties} aria-hidden="true" />
               <h2>{track.name}</h2>
               <span className="ln-group__note ln-mono">{list.length}</span>
             </header>

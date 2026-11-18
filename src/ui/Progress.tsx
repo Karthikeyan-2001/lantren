@@ -18,13 +18,55 @@ export interface HeatmapCell {
  * or it is not, in three warm steps. The whole grid is one picture to a screen reader,
  * described by `label`; the squares themselves say nothing.
  */
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const;
+
+/** A month name over the first week of each month (and over the first column). */
+function monthLabels(cells: readonly HeatmapCell[], weeks: number): { column: number; name: string }[] {
+  const labels: { column: number; name: string }[] = [];
+  let last = -1;
+  for (let column = 0; column < weeks; column++) {
+    const date = cells[column * 7]?.date;
+    if (!date) continue;
+    const month = Number(date.slice(5, 7)) - 1;
+    if (month !== last) labels.push({ column, name: MONTHS[month] ?? '' });
+    last = month;
+  }
+  // a label squeezed into the very first column next to another reads as clutter
+  return labels.length > 1 && labels[1]!.column - labels[0]!.column < 2 ? labels.slice(1) : labels;
+}
+
 export function Heatmap({ cells, weeks, label }: { cells: readonly HeatmapCell[]; weeks: number; label: string }) {
+  const lastPast = cells.reduce((at, c, i) => (c.future ? at : i), -1);
   return (
     <figure className="ln-heat">
-      <div className="ln-heat__grid" role="img" aria-label={label} style={{ '--heat-weeks': weeks } as CSSProperties}>
-        {cells.map((c) => (
-          <span key={c.date} className="ln-heat__cell" data-level={c.level} data-future={c.future ? '' : undefined} />
-        ))}
+      <div className="ln-heat__board" style={{ '--heat-weeks': weeks } as CSSProperties}>
+        <div className="ln-heat__months" aria-hidden="true">
+          {monthLabels(cells, weeks).map((m) => (
+            <span key={m.column} style={{ gridColumn: m.column + 1 }}>
+              {m.name}
+            </span>
+          ))}
+        </div>
+        <div className="ln-heat__days" aria-hidden="true">
+          <span>M</span>
+          <span />
+          <span>W</span>
+          <span />
+          <span>F</span>
+          <span />
+          <span />
+        </div>
+        <div className="ln-heat__grid" role="img" aria-label={label}>
+          {cells.map((c, i) => (
+            <span
+              key={c.date}
+              className="ln-heat__cell"
+              data-level={c.level}
+              data-future={c.future ? '' : undefined}
+              data-today={i === lastPast ? '' : undefined}
+            />
+          ))}
+        </div>
       </div>
       <figcaption className="ln-heat__legend" aria-hidden="true">
         <span>less</span>

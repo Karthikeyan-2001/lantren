@@ -75,8 +75,7 @@ export function SettingsPage() {
         ← Library
       </Link>
 
-      <section className="ln-section" aria-label="Reminders">
-        <hr className="ln-rule" />
+      <section className="ln-section ln-panel" aria-label="Reminders">
         <h2>Reminders</h2>
         <Toggle
           label="Review reminders"
@@ -156,8 +155,7 @@ export function SettingsPage() {
         )}
       </section>
 
-      <section className="ln-section" aria-label="Reviews">
-        <hr className="ln-rule" />
+      <section className="ln-section ln-panel" aria-label="Reviews">
         <h2>Reviews</h2>
         <Toggle
           label="Graduation reviews"
@@ -173,8 +171,7 @@ export function SettingsPage() {
         </p>
       )}
 
-      <section className="ln-section" aria-label="Appearance">
-        <hr className="ln-rule" />
+      <section className="ln-section ln-panel" aria-label="Appearance">
         <h2>Appearance</h2>
         <Choice legend="Theme" options={THEMES} value={choice} onChange={setChoice} />
       </section>

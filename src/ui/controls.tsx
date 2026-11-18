@@ -1,7 +1,7 @@
 import { useId } from 'react';
 import type { ButtonHTMLAttributes, ComponentProps, CSSProperties, ReactNode } from 'react';
 
-import { Flame } from './Flame';
+import { Flame, type FlameState } from './Flame';
 import { Hearth } from './Hearth';
 
 /* ---------- Button ---------- */
@@ -302,6 +302,9 @@ const RECALL_OPTIONS: readonly { value: RecallValue; label: string; hint: string
   { value: 'solid', label: 'Solid', hint: 'It came back whole.' },
 ];
 
+/** How much light each answer leaves: none, a flicker, a full flame. */
+const RECALL_FLAME: Record<RecallValue, FlameState> = { forgot: 'unlit', fuzzy: 'waiting', solid: 'lit' };
+
 /**
  * Three honest answers, stacked. Each is a real button: one tap records it. Forgot is
  * drawn as calmly as the others; only Solid carries a little warmth.
@@ -326,8 +329,11 @@ export function RecallRating({
           disabled={disabled}
           onClick={() => onRate(o.value)}
         >
-          <span className="ln-rating__label">{o.label}</span>
-          <span className="ln-rating__hint">{o.hint}</span>
+          <Flame state={RECALL_FLAME[o.value]} size={22} />
+          <span className="ln-rating__words">
+            <span className="ln-rating__label">{o.label}</span>
+            <span className="ln-rating__hint">{o.hint}</span>
+          </span>
         </button>
       ))}
     </div>
@@ -372,5 +378,76 @@ export function Toggle({
         onChange={(e) => onChange(e.target.checked)}
       />
     </div>
+  );
+}
+
+/* ---------- Flame scale ---------- */
+
+const SCALE_WORDS = ['shaky', 'unsure', 'getting there', 'solid', 'could teach it'] as const;
+
+/**
+ * Five flames for "how sure do you feel?": tapping one lights it and every flame before it.
+ * A radio group underneath, so arrow keys and screen readers work as with any choice.
+ */
+export function FlameScale<T extends string>({
+  legend,
+  options,
+  value,
+  onChange,
+}: {
+  legend: string;
+  /** Exactly the scale's steps, lowest first. */
+  options: readonly { value: T; label: string }[];
+  value: T;
+  onChange: (value: T) => void;
+}) {
+  const name = useId();
+  const chosen = options.findIndex((o) => o.value === value);
+  return (
+    <fieldset className="ln-choice ln-scale">
+      <legend>{legend}</legend>
+      <div className="ln-scale__row">
+        {options.map((option, i) => (
+          <label key={option.value} className="ln-scale__item" data-on={i <= chosen || undefined}>
+            <input
+              type="radio"
+              name={name}
+              value={option.value}
+              checked={value === option.value}
+              onChange={() => onChange(option.value)}
+              aria-label={`${option.label}, ${SCALE_WORDS[i] ?? ''}`}
+            />
+            <Flame state={i <= chosen ? 'lit' : 'unlit'} size={24} />
+            <span className="ln-scale__num" aria-hidden="true">
+              {option.label}
+            </span>
+          </label>
+        ))}
+      </div>
+      <p className="ln-scale__word" aria-hidden="true">
+        {SCALE_WORDS[chosen] ?? ''}
+      </p>
+    </fieldset>
+  );
+}
+
+/* ---------- Steps ---------- */
+
+/** Where you are in a short flow: a row of small flames joined by a thread, the current one lit. */
+export function Steps({ steps, current }: { steps: readonly string[]; current: number }) {
+  return (
+    <ol className="ln-steps" aria-label={`Step ${current + 1} of ${steps.length}`}>
+      {steps.map((step, i) => (
+        <li
+          key={step}
+          className="ln-steps__step"
+          data-state={i < current ? 'done' : i === current ? 'now' : 'later'}
+          aria-current={i === current ? 'step' : undefined}
+        >
+          <span className="ln-steps__dot" aria-hidden="true" />
+          <span className="ln-steps__label">{step}</span>
+        </li>
+      ))}
+    </ol>
   );
 }

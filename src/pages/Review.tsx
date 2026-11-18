@@ -19,7 +19,7 @@ import {
 import { toLocalDate, type LocalDate } from '../scheduler';
 import { Lantern } from '../ui/Lantern';
 import { Screen } from '../ui/Screen';
-import { Button, EmptyState, Pill, RecallRating, TextArea, type RecallValue } from '../ui/controls';
+import { Button, EmptyState, Pill, RecallRating, Steps, TextArea, type RecallValue } from '../ui/controls';
 
 type Step = 'recall' | 'reveal' | 'done';
 
@@ -27,6 +27,8 @@ type Step = 'recall' | 'reveal' | 'done';
  * The review flow: recall first with only the title showing, then reveal the notes and
  * rate honestly. The scheduler decides what happens next; this screen only asks and tells.
  */
+const STEPS = ['Recall', 'Compare', 'Done'] as const;
+
 export function ReviewPage() {
   const { reviewId = '' } = useParams();
   // A fresh flow for every review, even when Ionic reuses the page.
@@ -130,6 +132,7 @@ function ReviewFlow({ reviewId }: { reviewId: string }) {
   if (step === 'done' && outcome) {
     return (
       <Screen kicker={kicker} title={topic.title}>
+        <Steps steps={STEPS} current={2} />
         <Done
           topic={outcome.topic}
           outcome={outcome}
@@ -155,6 +158,7 @@ function ReviewFlow({ reviewId }: { reviewId: string }) {
           : undefined
       }
     >
+      <Steps steps={STEPS} current={step === 'recall' ? 0 : 1} />
       {step === 'recall' ? (
         <section className="ln-review" aria-label="Recall">
           {isDsa && topic.dsa?.problemUrl && (
@@ -166,7 +170,7 @@ function ReviewFlow({ reviewId }: { reviewId: string }) {
             label={isDsa ? 'Your solution' : 'What comes back'}
             placeholder={isDsa ? 'function solve(input) {\n  \n}' : 'a few lines, in your own words'}
             hint={isDsa ? 'Sketch it here or in your editor.' : "Type, or tap your keyboard's mic and say it."}
-            className={isDsa ? 'ln-field__control ln-review__code' : 'ln-field__control'}
+            className={isDsa ? 'ln-field__control ln-review__code' : 'ln-field__control ln-field__control--lined'}
             spellCheck={!isDsa}
             autoCapitalize={isDsa ? 'off' : undefined}
             autoCorrect={isDsa ? 'off' : undefined}
@@ -222,7 +226,7 @@ function Sheet({ topic, attempt, isDsa }: { topic: Topic; attempt: string; isDsa
     dsa?.solvedWithoutHints === true ? 'no hints' : dsa?.solvedWithoutHints === false ? 'with hints' : undefined,
   ].filter((f): f is string => Boolean(f));
   return (
-    <div className="ln-card ln-review__sheet">
+    <div className="ln-card ln-review__sheet ln-index">
       {attempt.trim() && (
         <div>
           <h3>{isDsa ? 'Your solution today' : 'What came back'}</h3>

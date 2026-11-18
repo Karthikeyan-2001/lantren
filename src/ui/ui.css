@@ -1984,3 +1984,519 @@ select.ln-field__control {
     stroke: var(--accent-text);
   }
 }
+
+/* =====================================================================
+   Lamplit material: one finish for every surface in the app.
+   A lamp hangs above each screen; panels catch its light on their top
+   rim; fields are wells set into the desk; numbers glow a little.
+   ===================================================================== */
+
+/* a lamp above every screen */
+ion-content {
+  --background: radial-gradient(130% 55% at 50% -12%, var(--lamp), transparent 62%), var(--bg);
+}
+
+/* the kicker carries a small lit ember */
+.ln-screen__head .ln-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.ln-screen__head .ln-kicker::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px 1px var(--glow);
+}
+
+/* ---------- Panels ---------- */
+.ln-card,
+.ln-week,
+.ln-stat,
+.ln-menu,
+.ln-panel,
+.ln-heat__board,
+.ln-rating__option,
+.ln-group > .ln-rows {
+  border: var(--hairline-w) solid transparent;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 38%, var(--surface)), var(--surface) 55%) padding-box,
+    linear-gradient(180deg, var(--rim-top), var(--hairline) 38%, var(--rim-bottom)) border-box;
+  box-shadow: var(--shadow-1);
+}
+.ln-arch {
+  border-color: transparent;
+  background:
+    radial-gradient(70% 55% at 50% 18%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 75%) padding-box,
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 45%, var(--surface)), var(--surface) 60%) padding-box,
+    linear-gradient(180deg, var(--rim-top), var(--hairline) 40%, var(--rim-bottom)) border-box;
+}
+.ln-offer {
+  border-color: transparent;
+  background:
+    radial-gradient(90% 120% at 0% 0%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 60%) padding-box,
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 38%, var(--surface)), var(--surface) 55%) padding-box,
+    linear-gradient(180deg, var(--rim-top), var(--hairline) 38%, var(--rim-bottom)) border-box;
+}
+.ln-notice {
+  border-color: transparent;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--accent) 12%, transparent), transparent 55%) padding-box,
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    linear-gradient(180deg, var(--rim-top), var(--hairline) 38%, var(--rim-bottom)) border-box;
+}
+
+/* a section of a screen, set in its own panel */
+.ln-panel {
+  padding: var(--sp-5) var(--sp-4);
+  border-radius: 24px;
+}
+.ln-panel > h2 {
+  font-size: 1.25rem;
+}
+.ln-panel--list {
+  padding: var(--sp-1) var(--sp-4);
+}
+.ln-panel--warm {
+  background:
+    radial-gradient(60% 90% at 12% 70%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 70%) padding-box,
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 38%, var(--surface)), var(--surface) 55%) padding-box,
+    linear-gradient(180deg, var(--rim-top), var(--hairline) 38%, var(--rim-bottom)) border-box;
+}
+
+/* lists of topics sit in one panel, rows divided inside it */
+.ln-group > .ln-rows {
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: 22px;
+}
+.ln-group__head {
+  padding: 0 var(--sp-1);
+}
+.ln-group__head h2 {
+  font-size: 1.125rem;
+}
+
+/* a track's colour as a small lit orb */
+.ln-orb,
+.ln-track__dot {
+  --orb-colour: var(--orb, var(--track-dot, var(--ash)));
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 30%,
+    color-mix(in srgb, var(--orb-colour) 45%, var(--flame-core)),
+    var(--orb-colour) 65%
+  );
+  box-shadow: 0 0 10px color-mix(in srgb, var(--orb-colour) 55%, transparent);
+}
+.ln-track__dot {
+  width: 12px;
+  height: 12px;
+}
+
+/* ---------- Buttons ---------- */
+.ln-btn--ember {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent) 80%, var(--flame-core)),
+    var(--accent) 55%,
+    color-mix(in srgb, var(--accent) 88%, var(--flame-deep))
+  );
+}
+/* a flame on an ember button is drawn in ink */
+.ln-btn--ember .ln-flame {
+  --accent: var(--on-accent);
+  --flame-deep: var(--on-accent);
+  --flame-core: color-mix(in srgb, var(--on-accent) 35%, transparent);
+  margin-left: -4px;
+}
+.ln-btn--ember .ln-flame__glow {
+  display: none;
+}
+.ln-btn--quiet,
+.ln-back {
+  border-color: transparent;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 45%, var(--surface)), var(--surface)) padding-box,
+    linear-gradient(180deg, var(--rim-top), var(--hairline-strong) 45%, var(--rim-bottom)) border-box;
+  box-shadow: var(--shadow-1);
+}
+.ln-back {
+  margin: calc(-1 * var(--sp-3)) 0 0;
+  padding: 0 var(--sp-4) 0 var(--sp-3);
+  font-size: var(--fs-small);
+  color: var(--text);
+}
+.ln-pill {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    linear-gradient(180deg, var(--rim-top), var(--hairline) 60%) border-box;
+}
+
+/* ---------- Fields: wells set into the desk ---------- */
+.ln-field__control {
+  border-color: var(--hairline);
+  background: color-mix(in srgb, var(--bg) 62%, var(--surface));
+  box-shadow: var(--well-shadow);
+}
+.ln-field__control:focus-visible {
+  border-color: var(--accent-text);
+  box-shadow:
+    var(--well-shadow),
+    0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent),
+    0 0 28px -8px var(--glow);
+}
+.ln-choice--segmented .ln-choice__row,
+.ln-toggle__input:not(:checked) {
+  background: color-mix(in srgb, var(--bg) 62%, var(--surface));
+  box-shadow: var(--well-shadow);
+}
+.ln-choice__thumb {
+  border-color: transparent;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 60%, var(--surface)), var(--surface)) padding-box,
+    linear-gradient(180deg, var(--rim-top), var(--hairline-strong) 50%, var(--rim-bottom)) border-box;
+}
+
+/* the topic title is written, not typed into a box */
+.ln-field__control--hero {
+  min-height: 56px;
+  padding: 6px 2px 10px;
+  border: 0;
+  border-bottom: 1.5px solid var(--hairline-strong);
+  border-radius: 0;
+  box-shadow: none;
+  font-family: var(--font-display);
+  font-size: 1.625rem;
+  letter-spacing: -0.01em;
+  background: linear-gradient(var(--accent), var(--accent)) 50% 100% / 0% 2px no-repeat;
+  transition:
+    background-size var(--dur-slow) var(--ease-out),
+    border-color var(--dur-calm) var(--ease-calm);
+}
+.ln-field__control--hero::placeholder {
+  font-style: italic;
+  opacity: 0.55;
+}
+.ln-field__control--hero:focus-visible {
+  border-radius: 0;
+  border-bottom-color: transparent;
+  box-shadow: none;
+  background-size: 100% 2px;
+}
+
+/* notes are written on ruled paper */
+.ln-field__control--lined {
+  --rule: 1.75rem;
+  min-height: calc(var(--rule) * 5 + 22px);
+  line-height: var(--rule);
+  /* the ruling lives in the writing area only, the well colour fills the rest */
+  background-image:
+    linear-gradient(to bottom, transparent calc(var(--rule) - 1px), var(--hairline) calc(var(--rule) - 1px)),
+    linear-gradient(color-mix(in srgb, var(--bg) 62%, var(--surface)), color-mix(in srgb, var(--bg) 62%, var(--surface)));
+  background-size:
+    100% var(--rule),
+    auto;
+  background-origin: content-box, padding-box;
+  background-clip: content-box, padding-box;
+  background-position: 0 0;
+  background-attachment: local, local;
+}
+
+/* ---------- Flame scale ---------- */
+.ln-scale__row {
+  display: flex;
+  gap: var(--sp-1);
+  padding: var(--sp-2);
+  border-radius: 22px;
+  border: var(--hairline-w) solid var(--hairline);
+  background: color-mix(in srgb, var(--bg) 62%, var(--surface));
+  box-shadow: var(--well-shadow);
+}
+.ln-scale__item {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  min-height: 72px;
+  padding: var(--sp-2) 0 6px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background-color var(--dur-calm) var(--ease-out);
+}
+.ln-scale__item input {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.ln-scale__item:has(input:focus-visible) {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 2px;
+}
+.ln-scale__item:has(input:checked) {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.ln-scale__item .ln-flame {
+  transition: transform var(--dur-slow) var(--ease-spring);
+}
+.ln-scale__item[data-on] .ln-flame {
+  transform: translateY(-2px);
+}
+.ln-scale__item:active .ln-flame {
+  transform: scale(0.88);
+  transition-duration: 90ms;
+}
+.ln-scale__num {
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  color: var(--text-muted);
+}
+.ln-scale__item[data-on] .ln-scale__num {
+  color: var(--text);
+}
+.ln-scale__word {
+  min-height: 1.5em;
+  margin-top: var(--sp-2);
+  text-align: center;
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--accent-text);
+}
+
+/* ---------- Steps ---------- */
+.ln-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+.ln-steps__step {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-micro);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.ln-steps__step:first-child {
+  flex: 0 0 auto;
+}
+.ln-steps__step + .ln-steps__step::before {
+  content: '';
+  flex: 1;
+  height: 1px;
+  margin: 0 var(--sp-1);
+  background: var(--hairline-strong);
+  transition: background-color var(--dur-slow) var(--ease-out);
+}
+.ln-steps__dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid var(--hairline-strong);
+  transition:
+    background-color var(--dur-slow) var(--ease-out),
+    box-shadow var(--dur-slow) var(--ease-out);
+}
+.ln-steps__step[data-state='done'] .ln-steps__dot {
+  border-color: var(--accent-text);
+  background: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.ln-steps__step:is([data-state='done'], [data-state='now'])::before {
+  background: color-mix(in srgb, var(--accent) 60%, transparent);
+}
+.ln-steps__step[data-state='now'] {
+  color: var(--text);
+  font-weight: 600;
+}
+.ln-steps__step[data-state='now'] .ln-steps__dot {
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent),
+    0 0 12px var(--glow);
+}
+
+/* ---------- Review: the notes are an index card ---------- */
+.ln-index {
+  position: relative;
+  padding-left: calc(var(--sp-5) + 14px);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface) 92%, var(--flame-core)), var(--surface) 70%) padding-box,
+    linear-gradient(180deg, var(--rim-top), var(--hairline) 38%, var(--rim-bottom)) border-box;
+}
+.ln-index::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--sp-5);
+  border-left: 1.5px solid color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.ln-index h3 {
+  color: var(--accent-text);
+}
+
+/* recall answers carry how much light they leave */
+.ln-rating__option {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+}
+.ln-rating__words {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ln-rating__option[data-recall='solid'] {
+  background:
+    radial-gradient(70% 140% at 0% 50%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%) padding-box,
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 38%, var(--surface)), var(--surface) 55%) padding-box,
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 75%, transparent), color-mix(in srgb, var(--accent) 25%, transparent))
+      border-box;
+}
+@media (hover: hover) {
+  .ln-rating__option:hover:not(:disabled) {
+    box-shadow:
+      var(--shadow-1),
+      0 0 24px -10px var(--glow);
+  }
+}
+
+/* ---------- Progress ---------- */
+.ln-heat__board {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: var(--sp-2);
+  row-gap: 6px;
+  max-width: 380px;
+  padding: var(--sp-3) var(--sp-4) var(--sp-4) var(--sp-3);
+  border-radius: 20px;
+}
+.ln-heat__months {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: repeat(var(--heat-weeks), minmax(0, 1fr));
+  gap: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: var(--text-muted);
+}
+.ln-heat__months span {
+  white-space: nowrap;
+}
+.ln-heat__days {
+  grid-column: 1;
+  grid-row: 2;
+  display: grid;
+  grid-template-rows: repeat(7, minmax(0, 1fr));
+  gap: 3px;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: var(--text-muted);
+}
+.ln-heat__grid {
+  grid-column: 2;
+  grid-row: 2;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.ln-heat__cell[data-level='2'] {
+  box-shadow: 0 0 6px -2px var(--glow);
+}
+.ln-heat__cell[data-level='3'] {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 80%, var(--flame-core)), var(--accent));
+  box-shadow: 0 0 8px -1px var(--glow);
+}
+.ln-heat__cell[data-today] {
+  outline: 1.5px solid var(--accent-text);
+  outline-offset: 1.5px;
+}
+.ln-meter {
+  height: 8px;
+  background: color-mix(in srgb, var(--bg) 62%, var(--surface));
+  box-shadow: var(--well-shadow);
+}
+.ln-meter__fill {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--meter-colour, var(--accent)) 55%, transparent),
+    var(--meter-colour, var(--accent))
+  );
+  box-shadow: 0 0 10px -2px var(--meter-colour, var(--accent));
+}
+.ln-streak__number .ln-mono,
+.ln-timer__digits {
+  text-shadow: 0 0 32px var(--glow);
+}
+.ln-stat {
+  background:
+    radial-gradient(80% 90% at 0% 0%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 70%) padding-box,
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 38%, var(--surface)), var(--surface) 55%) padding-box,
+    linear-gradient(180deg, var(--rim-top), var(--hairline) 38%, var(--rim-bottom)) border-box;
+}
+.ln-ring__value {
+  filter: drop-shadow(0 0 3px var(--glow));
+}
+
+/* ---------- Tracks ---------- */
+.ln-panel--list .ln-track:first-child {
+  border-top: 0;
+}
+
+/* inside a panel, the heatmap is a tray set into it rather than a second card */
+.ln-panel .ln-heat__board {
+  border: var(--hairline-w) solid var(--hairline);
+  background: color-mix(in srgb, var(--bg) 55%, var(--surface));
+  box-shadow: var(--well-shadow);
+}
+
+/* track rows: the name gets the room, the weekly target stays a quiet line of numbers */
+.ln-panel--list .ln-track__name {
+  font-size: 1.0625rem;
+}
+.ln-panel--list .ln-track__meta {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+}
+.ln-panel--list .ln-track > summary {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: var(--sp-3);
+  padding: var(--sp-3) 0;
+}
+.ln-panel--list .ln-track__dot {
+  grid-row: 1 / span 2;
+}
+.ln-panel--list .ln-track__name {
+  grid-column: 2;
+  line-height: 1.25;
+}
+.ln-panel--list .ln-track__meta {
+  grid-column: 2;
+  grid-row: 2;
+}
+.ln-panel--list .ln-track > summary::after {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+}

@@ -283,6 +283,19 @@ Why each phase gets its model:
 - Nav icons follow the motif: Today is a lantern with a flame, Library is two lanterns on a shelf, Focus stays a flame.
 - Brass details: switch knobs are small brass knobs when off (ember when on), the capture button carries a brass ring, and the window arch's inner frame is tinted with `--metal-hi`.
 
+### P7 (lamplit material across every page)
+- One finish for the whole app, appended as the "Lamplit material" layer at the end of `ui.css`. New per-theme tokens: `--rim-top`, `--rim-bottom` (a panel's border catches light at the top and fades), `--well-shadow` (fields and tracks are sunken wells), `--lamp` (a warm light above every screen, painted on `ion-content`).
+- Panels: cards, offers, notices, the week card, stats, the menu, rating answers and topic lists share the lit-rim material (`padding-box` fill plus a `border-box` gradient). Sections of Progress, Settings, Your data and Tracks are `.ln-panel`s and the old hairline rules between them are gone. `.ln-panel--warm` (the streak) carries a glow behind its lantern; `.ln-panel--list` is a panel of rows.
+- Topic lists (Today, Library) sit in one panel each, rows divided inside it. Library shelves are headed by an orb in the track colour (`.ln-orb`); track dots in Tracks are the same orb.
+- Screen kickers carry a small lit ember. Today's kicker is the date (`longDate` in `view.ts`).
+- Buttons: ember is a lit gradient; a `Flame` inside an ember button is drawn in ink. Quiet buttons and the back link share the lit rim.
+- Capture: the title is written on a line in Fraunces (`.ln-field__control--hero`, an ember underline draws across on focus); notes (and recall on Review) are ruled paper (`--lined`, the ruling confined to the writing area); confidence is `FlameScale`, five flames with a word for the level; "Light it" carries an ink flame.
+- Review: `Steps` (Recall, Compare, Done) above each stage; the notes are an index card (`.ln-index`, a margin line in ember); each recall answer shows its flame (none, flicker, full) and Solid has an ember rim.
+- Progress: the heatmap is a sunken tray with month labels on top and M/W/F down the side, today is ringed, brighter days glow; meters are wells with a glowing fill in the track colour; the streak number and the focus timer glow faintly.
+- Tracks: each track's weekly target sits on a second line under its name.
+- New components `FlameScale` and `Steps`, and the writing surfaces, have specimens on the style-guide page.
+- The style-guide e2e check matches the heading exactly, so the fading Library heading ("Your lanterns") cannot match it mid-transition.
+
 ## Environment notes
 
 - Windows 11, Node 26. No Java or Android SDK installed, so Android builds wait for Android Studio.

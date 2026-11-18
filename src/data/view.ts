@@ -58,6 +58,11 @@ export function shortDate(date: LocalDate): string {
   return toCalendar(date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
 }
 
+/** "Wednesday 18 November", for the top of Today. */
+export function longDate(date: LocalDate): string {
+  return toCalendar(date).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+
 /** "today", "tomorrow", "yesterday", "Thu 19 Nov", or "3 days ago" for waiting reviews. */
 export function relativeDay(date: LocalDate, today: LocalDate): string {
   const ahead = daysBetween(today, date);

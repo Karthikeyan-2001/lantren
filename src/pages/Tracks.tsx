@@ -37,14 +37,13 @@ export function TracksPage() {
         ← Library
       </Link>
 
-      <section aria-label="Tracks">
+      <section className="ln-panel ln-panel--list" aria-label="Tracks">
         {ordered.map((track) => (
           <TrackEditor key={track.id} track={track} />
         ))}
       </section>
 
-      <section className="ln-section" aria-label="Add a track">
-        <hr className="ln-rule" />
+      <section className="ln-section ln-panel" aria-label="Add a track">
         <h2>Add a track</h2>
         {/* Keyed by the track count so the form starts fresh after each one is added. */}
         <NewTrack key={tracks.length} colour={nextColour ?? 'ember'} />

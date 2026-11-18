@@ -16,6 +16,7 @@ import {
   Button,
   Choice,
   EmptyState,
+  FlameScale,
   Notice,
   Offer,
   Pill,
@@ -23,6 +24,7 @@ import {
   RangeField,
   RecallRating,
   SelectField,
+  Steps,
   TextArea,
   TextField,
   Toggle,
@@ -134,6 +136,7 @@ export function StyleGuidePage() {
   const { choice, resolved, setChoice } = useTheme();
   const [recall, setRecall] = useState<(typeof RECALL)[number]['value'] | null>('fuzzy');
   const [remaining, setRemaining] = useState(70);
+  const [sure, setSure] = useState<'1' | '2' | '3' | '4' | '5'>('3');
   const [rated, setRated] = useState<string>('nothing yet');
   const [toggled, setToggled] = useState(false);
   const [time, setTime] = useState('19:30');
@@ -152,6 +155,35 @@ export function StyleGuidePage() {
 
       <Section title="Theme" note="Dark first. Paper is the daylight version. Short fixed sets are a segmented track.">
         <Choice legend="Appearance" options={THEMES} value={choice} onChange={setChoice} />
+      </Section>
+
+      <Section
+        title="Flame scale"
+        note="How sure you feel, as five flames. One tap lights it and every flame before it."
+      >
+        <FlameScale
+          legend="How sure do you feel?"
+          options={(['1', '2', '3', '4', '5'] as const).map((value) => ({ value, label: value }))}
+          value={sure}
+          onChange={setSure}
+        />
+      </Section>
+
+      <Section title="Steps" note="Where you are in a short flow. A thread of small flames, the current one lit.">
+        <Steps steps={['Recall', 'Compare', 'Done']} current={1} />
+      </Section>
+
+      <Section title="Writing surfaces" note="A title is written on a line; notes go on ruled paper.">
+        <TextField
+          label="Topic"
+          placeholder="closures and the event loop"
+          className="ln-field__control ln-field__control--hero"
+        />
+        <TextArea
+          label="Notes"
+          placeholder="a few lines in your own words"
+          className="ln-field__control ln-field__control--lined"
+        />
       </Section>
 
       <Section title="Menu" note="A few places to go, in one card. Library ends with one.">

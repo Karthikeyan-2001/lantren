@@ -112,8 +112,7 @@ export function DataSection() {
   };
 
   return (
-    <section className="ln-section" aria-label="Your data">
-      <hr className="ln-rule" />
+    <section className="ln-section ln-panel" aria-label="Your data">
       <h2>Your data</h2>
       <p className="ln-small ln-muted">
         Everything lives on this device. A backup is one file you can keep anywhere and restore from later.
