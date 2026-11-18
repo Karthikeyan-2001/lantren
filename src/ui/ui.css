@@ -1592,10 +1592,10 @@ select.ln-field__control {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--sp-5);
+  gap: clamp(var(--sp-6), 9vw, var(--sp-7));
 }
 .ln-focus__preview .ln-timer__digits {
-  font-size: clamp(3rem, 16vw, 5rem);
+  font-size: clamp(2.5rem, 12vw, 3.5rem);
 }
 /* one quiet line under the timer; keeps its height so nothing jumps when it speaks */
 .ln-focus__line {
