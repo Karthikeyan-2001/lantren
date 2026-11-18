@@ -28,12 +28,17 @@ export interface ReminderPort {
   openExactTimingSettings(): Promise<ExactTiming>;
   /** Cancels everything scheduled, clears what was delivered, and schedules `reminders`. */
   replaceAll(reminders: readonly OutgoingReminder[]): Promise<void>;
+  /** Shows a sample reminder a few seconds from now, so the user can see one arrive. */
+  sendTest(): Promise<void>;
   /** Calls back when a reminder is tapped. Returns a function that stops listening. */
   onTap(handler: (target: { reviewId?: string }) => void): () => void;
 }
 
 const CHANNEL_ID = 'reviews';
 const GROUP = 'lantern-reviews';
+/** Planned reminders always have ids of 1 or more, so 0 never clashes with them. */
+export const TEST_REMINDER_ID = 0;
+export const TEST_REMINDER_DELAY_MS = 5_000;
 
 const toPermission = (state: string): ReminderPermission =>
   state === 'granted' ? 'granted' : state === 'denied' ? 'denied' : 'prompt';
@@ -94,7 +99,9 @@ export function capacitorReminderPort(): ReminderPort {
     },
 
     async replaceAll(reminders) {
-      const { notifications: pending } = await LocalNotifications.getPending();
+      // A test reminder on its way is left alone; it is not part of the plan.
+      const { notifications } = await LocalNotifications.getPending();
+      const pending = notifications.filter((n) => n.id !== TEST_REMINDER_ID);
       if (pending.length > 0) {
         await LocalNotifications.cancel({ notifications: pending.map((n) => ({ id: n.id })) });
       }
@@ -120,6 +127,23 @@ export function capacitorReminderPort(): ReminderPort {
           autoCancel: true,
           extra: { reviewId: r.reviewId ?? null },
         })),
+      });
+    },
+
+    async sendTest() {
+      await ensureChannel();
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            id: TEST_REMINDER_ID,
+            title: 'Lantern is lit',
+            body: 'This is how a review reminder arrives.',
+            schedule: { at: new Date(Date.now() + TEST_REMINDER_DELAY_MS), allowWhileIdle: true },
+            channelId: android ? CHANNEL_ID : undefined,
+            autoCancel: true,
+            extra: { reviewId: null },
+          },
+        ],
       });
     },
 

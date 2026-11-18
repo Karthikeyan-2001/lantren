@@ -19,6 +19,7 @@ function fakePort(permission: ReminderPermission = 'granted') {
       calls.push([...reminders]);
       if (port.hold) await new Promise<void>((resolve) => (release = resolve));
     },
+    sendTest: async () => undefined,
     onTap: () => () => undefined,
   };
   return { port, calls, release: () => release?.() };
@@ -70,10 +71,28 @@ describe('syncReminders', () => {
   test('replaces what is scheduled with the plan, as local instants', async () => {
     const { port, calls } = fakePort();
     const result = await syncReminders(port, state([review('r', '2026-11-18')]), NOW);
-    expect(result).toEqual({ permission: 'granted', scheduled: 1 });
+    expect(result).toMatchObject({ permission: 'granted', scheduled: 1, next: { reviewId: 'r' } });
     expect(calls).toHaveLength(1);
     expect(calls[0]?.[0]).toMatchObject({ title: 'Closures', reviewId: 'r' });
     expect(calls[0]?.[0]?.at.getTime()).toBe(new Date(2026, 10, 18, 19, 30).getTime());
+  });
+
+  test('reports the soonest reminder handed to the phone', async () => {
+    const { port } = fakePort();
+    const result = await syncReminders(
+      port,
+      state([review('later', '2026-11-21'), review('soon', '2026-11-19'), review('mid', '2026-11-20')]),
+      NOW,
+    );
+    expect(result.scheduled).toBe(3);
+    expect(result.next?.reviewId).toBe('soon');
+    expect(result.next?.at.getTime()).toBe(new Date(2026, 10, 19, 19, 30).getTime());
+  });
+
+  test('reports no next reminder when nothing is due', async () => {
+    const { port } = fakePort();
+    const result = await syncReminders(port, state([]), NOW);
+    expect(result).toEqual({ permission: 'granted', scheduled: 0, next: null });
   });
 
   test('clears everything when reminders are switched off', async () => {
@@ -86,7 +105,7 @@ describe('syncReminders', () => {
     for (const permission of ['denied', 'prompt'] as const) {
       const { port, calls } = fakePort(permission);
       const result = await syncReminders(port, state([review('r', '2026-11-18')]), NOW);
-      expect(result).toEqual({ permission, scheduled: 0 });
+      expect(result).toEqual({ permission, scheduled: 0, next: null });
       expect(calls).toEqual([[]]);
     }
   });
@@ -147,6 +166,19 @@ describe('createReminderSync', () => {
     port.replaceAll = replaceAll;
     await sync.request();
     expect(calls).toHaveLength(1);
+  });
+
+  test('passes each result to the listener', async () => {
+    const { port } = fakePort();
+    const results: number[] = [];
+    const sync = createReminderSync(
+      port,
+      () => state([review('r', '2026-11-18')]),
+      () => NOW,
+      (r) => results.push(r.scheduled),
+    );
+    await sync.request();
+    expect(results).toEqual([1]);
   });
 
   test('waits quietly while the data is not loaded, then runs once it is', async () => {

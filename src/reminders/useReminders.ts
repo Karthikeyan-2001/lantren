@@ -1,21 +1,45 @@
 /** Where reminders meet the running app: the shared port, the sync, and two hooks. */
 import { App as CapacitorApp } from '@capacitor/app';
 import { Capacitor } from '@capacitor/core';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useLantern } from '../data/store';
 import type { Settings } from '../data/types';
 
 import { capacitorReminderPort, type ExactTiming, type ReminderPermission } from './port';
-import { clockKey, createReminderSync } from './sync';
+import { clockKey, createReminderSync, type SyncResult } from './sync';
 
 export const reminderPort = capacitorReminderPort();
 
-const reminderSync = createReminderSync(reminderPort, () => {
-  const s = useLantern.getState();
-  return s.status === 'ready' ? { reviews: s.reviews, topics: s.topics, settings: s.settings } : null;
-});
+// The outcome of the latest sync, so Settings can say what the phone is holding.
+let lastResult: SyncResult | null = null;
+const resultListeners = new Set<() => void>();
+const setLastResult = (result: SyncResult) => {
+  lastResult = result;
+  resultListeners.forEach((listener) => listener());
+};
+
+const reminderSync = createReminderSync(
+  reminderPort,
+  () => {
+    const s = useLantern.getState();
+    return s.status === 'ready' ? { reviews: s.reviews, topics: s.topics, settings: s.settings } : null;
+  },
+  () => new Date(),
+  setLastResult,
+);
+
+/** The latest sync's outcome, or null before the first one finishes. */
+export function useLastReminderSync(): SyncResult | null {
+  return useSyncExternalStore(
+    (listener) => {
+      resultListeners.add(listener);
+      return () => resultListeners.delete(listener);
+    },
+    () => lastResult,
+  );
+}
 
 /** Re-plan and re-schedule every reminder from what is stored right now. */
 export const requestReminderSync = (): Promise<void> => reminderSync.request();

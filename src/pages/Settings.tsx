@@ -4,8 +4,17 @@ import { Link } from 'react-router-dom';
 import { DEFAULT_SETTINGS } from '../data/seed';
 import { useLantern } from '../data/store';
 import type { Settings } from '../data/types';
+import { whenWords } from '../data/view';
 import { deliveryFor, isClockTime } from '../reminders/plan';
-import { enableReminders, reminderPort, requestReminderSync, useReminderStatus } from '../reminders/useReminders';
+import type { SyncResult } from '../reminders/sync';
+import {
+  enableReminders,
+  reminderPort,
+  requestReminderSync,
+  useLastReminderSync,
+  useReminderStatus,
+} from '../reminders/useReminders';
+import { SCHEDULE, toLocalDate } from '../scheduler';
 import { useTheme, type ThemeChoice } from '../theme/theme';
 import { Screen } from '../ui/Screen';
 import { Button, Choice, TextField, Toggle } from '../ui/controls';
@@ -21,6 +30,19 @@ const THEMES: readonly { value: ThemeChoice; label: string }[] = [
 const SYSTEM_OFF =
   'Notifications are switched off for Lantern in this device’s settings. Switch them on there and reminders will follow.';
 
+const FIRST_REVIEW_DAY = (SCHEDULE.REVIEW_OFFSETS[0] ?? 3) + 1;
+
+/** "Next reminder tomorrow at 7:30 pm: “Closures”." or why there is none yet. */
+function nextReminderLine(result: SyncResult | null, now: Date): string | null {
+  if (!result || result.permission !== 'granted') return null;
+  if (!result.next) {
+    return `Nothing to remind you about yet. Reminders come on the day a review is due, the first on day ${FIRST_REVIEW_DAY} after you study something.`;
+  }
+  const { at, title } = result.next;
+  const time = at.toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' });
+  return `Next reminder ${whenWords(toLocalDate(at), toLocalDate(now))} at ${time}: “${title}”.`;
+}
+
 /** Settings, reached from Library. */
 export function SettingsPage() {
   const settings = useLantern((s) => s.settings);
@@ -29,6 +51,16 @@ export function SettingsPage() {
   const status = useReminderStatus();
   const [failed, setFailed] = useState(false);
   const [refused, setRefused] = useState(false);
+  const [testSent, setTestSent] = useState(false);
+  const lastSync = useLastReminderSync();
+  const nextLine = settings.reminders ? nextReminderLine(lastSync, new Date()) : null;
+
+  const sendTest = () =>
+    attempt(async () => {
+      setTestSent(false);
+      await reminderPort.sendTest();
+      setTestSent(true);
+    });
 
   const attempt = async (work: () => Promise<unknown>) => {
     setFailed(false);
@@ -149,6 +181,21 @@ export function SettingsPage() {
                 >
                   Allow exact timing
                 </Button>
+              </>
+            )}
+            {status.permission === 'granted' && (
+              <>
+                {nextLine && (
+                  <p className="ln-small ln-muted" role="status">
+                    {nextLine}
+                  </p>
+                )}
+                <Button onClick={() => void sendTest()}>Send a test reminder</Button>
+                {testSent && (
+                  <p className="ln-small ln-muted" role="status">
+                    A test reminder arrives in a few seconds. You can leave the app to watch for it.
+                  </p>
+                )}
               </>
             )}
           </>

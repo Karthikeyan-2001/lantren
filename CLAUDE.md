@@ -308,6 +308,11 @@ Why each phase gets its model:
 - Android 12+ splash: ink background with the adaptive foreground as its icon, then `AppTheme.NoActionBar`; no white flash.
 - The app name stays "Lantern" (`capacitor.config.ts` `appName`, `strings.xml` `app_name`); it was already set.
 
+### P7 (reminder check)
+- Settings shows what the phone is holding: "Next reminder tomorrow at 7:30 pm: “Closures”", or, with nothing due, that the first reminder comes on day 4 after studying something. It is the soonest reminder from the latest sync (`SyncResult.next`, kept by `useLastReminderSync`), not a read-back from Android.
+- "Send a test reminder" schedules one sample notification 5 seconds out on the reviews channel. Its id is 0, which planned reminders never use, so a sync in those seconds does not cancel it.
+- Emulated Android Chrome in Playwright reads a granted notification permission back as "denied" after navigating, so the reminders e2e test pins `Notification.permission` to granted.
+
 ## Environment notes
 
 - Windows 11, Node 26. No Java or Android SDK installed, so Android builds wait for Android Studio.

@@ -148,6 +148,9 @@ async function expectStoredSetting(page: Page, field: string, value: unknown) {
 
 test('reminders are offered once, switch on, and can be tuned in settings', async ({ page, context }) => {
   await context.grantPermissions(['notifications']);
+  // Emulated Android Chrome reads the grant back as "denied" after a navigation; the app
+  // on a phone asks Android itself. Report the permission this browser was given.
+  await page.addInitScript(() => Object.defineProperty(Notification, 'permission', { get: () => 'granted' }));
   await captureOne(page, 'Binary search');
 
   const offer = page.getByRole('region', { name: 'Want a nudge on review days?' });
@@ -158,6 +161,11 @@ test('reminders are offered once, switch on, and can be tuned in settings', asyn
   await expect(page.getByRole('switch', { name: 'Review reminders' })).toBeChecked();
   const time = page.getByLabel('Remind me at');
   await expect(time).toHaveValue('19:30');
+
+  // Settings says what the phone is holding, and a test reminder can be sent.
+  await expect(page.getByText(/^Next reminder on .+ at 7:30 pm: “Binary search”\.$/)).toBeVisible();
+  await page.getByRole('button', { name: 'Send a test reminder' }).click();
+  await expect(page.getByText('A test reminder arrives in a few seconds.', { exact: false })).toBeVisible();
 
   // A time inside quiet hours is moved, and the page says so.
   await time.fill('23:00');

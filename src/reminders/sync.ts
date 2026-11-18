@@ -35,11 +35,13 @@ export type SyncState = Omit<PlanInput, 'now'>;
 export interface SyncResult {
   permission: ReminderPermission;
   scheduled: number;
+  /** The soonest reminder handed to the phone, or null when none was. */
+  next: OutgoingReminder | null;
 }
 
 export async function syncReminders(port: ReminderPort, state: SyncState, now: Date): Promise<SyncResult> {
   const permission = await port.permission();
-  if (permission === 'unsupported') return { permission, scheduled: 0 };
+  if (permission === 'unsupported') return { permission, scheduled: 0, next: null };
 
   const outgoing: OutgoingReminder[] =
     permission === 'granted'
@@ -48,7 +50,11 @@ export async function syncReminders(port: ReminderPort, state: SyncState, now: D
           .filter((r) => r.at.getTime() > now.getTime())
       : [];
   await port.replaceAll(outgoing);
-  return { permission, scheduled: outgoing.length };
+  const next = outgoing.reduce<OutgoingReminder | null>(
+    (soonest, r) => (!soonest || r.at < soonest.at ? r : soonest),
+    null,
+  );
+  return { permission, scheduled: outgoing.length, next };
 }
 
 /**
@@ -59,6 +65,8 @@ export function createReminderSync(
   port: ReminderPort,
   read: () => SyncState | null,
   clock: () => Date = () => new Date(),
+  /** Hears the outcome of each run that reached the phone. */
+  onResult: (result: SyncResult) => void = () => undefined,
 ) {
   let busy = false;
   let again = false;
@@ -70,7 +78,7 @@ export function createReminderSync(
       const state = read();
       if (!state) continue;
       try {
-        await syncReminders(port, state, clock());
+        onResult(await syncReminders(port, state, clock()));
       } catch (error) {
         console.warn('Lantern could not update its reminders', error);
       }
