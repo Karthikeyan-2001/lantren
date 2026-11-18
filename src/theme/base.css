@@ -38,6 +38,22 @@ ion-content {
   --color: var(--text);
 }
 
+/* Scroll bars: none on touch screens (the page moves under the finger, a bar is just
+   noise), a thin warm one with a mouse, where it is a handle. */
+ion-content::part(scroll),
+html,
+body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--hairline-strong) transparent;
+}
+@media (pointer: coarse) {
+  ion-content::part(scroll),
+  html,
+  body {
+    scrollbar-width: none;
+  }
+}
+
 h1,
 h2,
 h3 {

@@ -313,6 +313,8 @@ Why each phase gets its model:
 - "Send a test reminder" schedules one sample notification 5 seconds out on the reviews channel. Its id is 0, which planned reminders never use, so a sync in those seconds does not cancel it.
 - Emulated Android Chrome in Playwright reads a granted notification permission back as "denied" after navigating, so the reminders e2e test pins `Notification.permission` to granted.
 
+- Scroll bars are hidden on touch screens (`pointer: coarse`) and thin in `--hairline-strong` with a mouse, on `ion-content::part(scroll)`, `html` and `body` (`base.css`).
+
 ## Environment notes
 
 - Windows 11, Node 26. No Java or Android SDK installed, so Android builds wait for Android Studio.
