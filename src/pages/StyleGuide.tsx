@@ -450,6 +450,7 @@ export function StyleGuidePage() {
               ['held', 'paused'],
               ['resting', 'on a break'],
               ['glow', 'finished'],
+              ['dark', 'not lit yet'],
             ] as const
           ).map(([mood, word]) => (
             <li key={mood}>

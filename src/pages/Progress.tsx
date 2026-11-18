@@ -5,7 +5,7 @@ import { useLantern } from '../data/store';
 import { useToday } from '../data/useToday';
 import { completionWords, formatMinutes, heatmapLabel, streakLine, streakUnit, weekLine } from '../progress/copy';
 import { activityByDay, heatmap, lockedCount, reviewCompletion, streakFor, weeklyFocus } from '../progress/stats';
-import { Flame } from '../ui/Flame';
+import { Hearth } from '../ui/Hearth';
 import { Heatmap, Meter, Stat } from '../ui/Progress';
 import { Screen } from '../ui/Screen';
 
@@ -40,7 +40,7 @@ export function ProgressPage() {
         <hr className="ln-rule" />
         <h2>A gentle streak</h2>
         <div className="ln-streak">
-          <Flame state={streak.todayDone ? 'lit' : streak.days > 0 ? 'waiting' : 'unlit'} size={44} />
+          <Hearth mood={streak.todayDone ? 'ready' : streak.days > 0 ? 'held' : 'dark'} mini />
           <p className="ln-streak__number">
             <span className="ln-mono">{streak.days}</span>
             <span className="ln-muted">{streakUnit(streak.days)} in a row</span>

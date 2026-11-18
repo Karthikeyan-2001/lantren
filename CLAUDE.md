@@ -276,6 +276,13 @@ Why each phase gets its model:
 - `EmptyState` shows a lit flame (40 px, so it is live) standing on a sill inside a soft round halo.
 - `Lantern` is an SVG carriage lantern (viewBox 100 x 126): hook and ring, a domed roof with a finial, a band in the track colour, a glass chamber between two bronze pillars with a glint and a mullion, and a footed base; d4 and d7 sit under it. The two `Flame`s are laid over the glass (their own halos are hidden there) and the light on the glass follows `data-glow` (none, a slow ember pulse while waiting, half, full; gold when locked in). New per-theme tokens: `--metal-hi`, `--metal-lo`, `--glass`, `--glass-shine`, `--lantern-shadow`. Full size is 76 px and sways a little on its ring when lit; list rows use 62 px and stay still.
 
+### P7 (one lantern across the app)
+- The lantern drawing is one component, `LanternFrame` (`src/ui/LanternFrame.tsx`, CSS `.ln-frame*`). Callers lay flames over its glass with `.ln-frame-flames` and set the light with `--frame-light` (0 to 1) and `--frame-light-colour`.
+- `Hearth` is now that lantern with a single flame (no mullion) and light spilling around it, in three sizes: full (Focus session, about 196 px), `compact` (Focus set-up, style guide) and `mini` (empty states, streak). It sways on its ring while ready, burning or resting, holds still when paused or finished, and dims glass, flame and spill together with `level`. New mood `dark` is an unlit lantern.
+- Empty states show a mini lit lantern; the streak on Progress shows a mini lantern that is lit today, holding while the streak runs, dark at zero.
+- Nav icons follow the motif: Today is a lantern with a flame, Library is two lanterns on a shelf, Focus stays a flame.
+- Brass details: switch knobs are small brass knobs when off (ember when on), the capture button carries a brass ring, and the window arch's inner frame is tinted with `--metal-hi`.
+
 ## Environment notes
 
 - Windows 11, Node 26. No Java or Android SDK installed, so Android builds wait for Android Studio.

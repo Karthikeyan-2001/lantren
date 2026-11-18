@@ -2,6 +2,7 @@ import { useId } from 'react';
 import type { ButtonHTMLAttributes, ComponentProps, CSSProperties, ReactNode } from 'react';
 
 import { Flame } from './Flame';
+import { Hearth } from './Hearth';
 
 /* ---------- Button ---------- */
 
@@ -247,9 +248,7 @@ export function EmptyState({ title, children }: { title: string; children: React
   return (
     <div className="ln-arch">
       <div className="ln-empty">
-        <span className="ln-empty__lamp" aria-hidden="true">
-          <Flame state="lit" size={40} />
-        </span>
+        <Hearth mood="ready" mini />
         <h2>{title}</h2>
         {children}
       </div>
