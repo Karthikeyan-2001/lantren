@@ -894,7 +894,7 @@ textarea.ln-field__control {
   transition-duration: 90ms;
 }
 
-/* capture: an ember button seated at the end of the dock, ringed in brass */
+/* capture: a brass lens at the end of the dock, a small lit flame with a plus inside */
 .ln-nav__capture {
   flex: none;
   display: grid;
@@ -902,19 +902,38 @@ textarea.ln-field__control {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: var(--accent);
-  color: var(--on-accent);
-  box-shadow:
-    0 0 0 1.5px color-mix(in srgb, var(--metal-hi) 80%, transparent),
-    0 4px 14px -6px var(--glow);
   text-decoration: none;
-  transition:
-    transform var(--dur-calm) var(--ease-spring),
-    box-shadow var(--dur-quick) var(--ease-calm);
+  transition: transform var(--dur-calm) var(--ease-spring);
 }
-.ln-nav__capture svg {
-  width: 22px;
-  height: 22px;
+.ln-capture {
+  width: 46px;
+  height: 46px;
+  overflow: visible;
+  filter: drop-shadow(0 2px 3px var(--lantern-shadow));
+}
+.ln-capture__rim-hi {
+  stop-color: var(--metal-hi);
+}
+.ln-capture__rim-lo {
+  stop-color: var(--metal-lo);
+}
+.ln-capture__glass {
+  fill: color-mix(in srgb, var(--bg) 82%, var(--surface));
+}
+.ln-capture__flame {
+  fill: var(--accent);
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transition: transform var(--dur-calm) var(--ease-spring);
+}
+.ln-capture__core {
+  fill: var(--flame-core);
+}
+.ln-capture__plus {
+  fill: none;
+  stroke: var(--text);
+  stroke-width: 1.8;
+  stroke-linecap: round;
 }
 .ln-nav__capture:active {
   transform: scale(0.92);
@@ -922,13 +941,11 @@ textarea.ln-field__control {
 }
 .ln-nav__capture:focus-visible {
   border-radius: 50%;
-  outline-color: var(--text);
+  outline-color: var(--accent-text);
 }
 @media (hover: hover) {
-  .ln-nav__capture:hover {
-    box-shadow:
-      0 0 0 1.5px var(--metal-hi),
-      0 6px 18px -6px var(--glow);
+  .ln-nav__capture:hover .ln-capture__flame {
+    transform: scale(1.08);
   }
 }
 

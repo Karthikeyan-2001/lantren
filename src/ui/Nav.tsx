@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react';
+import { useId, type CSSProperties, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 const icon = (children: ReactNode) => (
@@ -82,10 +82,35 @@ export function Nav({ hidden = false }: { hidden?: boolean }) {
         </span>
         {capture && (
           <Link to="/capture" className="ln-nav__capture" aria-label="Capture what you studied">
-            {icon(<path d="M12 5.5v13M5.5 12h13" strokeWidth="2.25" />)}
+            <CaptureLens />
           </Link>
         )}
       </nav>
     </>
+  );
+}
+
+/**
+ * The capture mark: a lens of dark glass in a brass rim, holding a small lit flame with a plus
+ * beneath it. Light a new lantern. Colours come from the theme, so it follows dark and paper.
+ */
+function CaptureLens() {
+  const rim = `${useId()}-rim`;
+  return (
+    <svg className="ln-capture" viewBox="0 0 46 46" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id={rim} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" className="ln-capture__rim-hi" />
+          <stop offset="1" className="ln-capture__rim-lo" />
+        </linearGradient>
+      </defs>
+      <circle className="ln-capture__glass" cx="23" cy="23" r="21.25" stroke={`url(#${rim})`} strokeWidth="2.5" />
+      <path
+        className="ln-capture__flame"
+        d="M23 9.5c.5 4 6 7 6 12.5a6 6 0 0 1-12 0c0-3 1.8-5 2.6-7.5.6 1.6 1.4 2.3 2 2.1.7-2.2.5-4.6 1.4-7.1Z"
+      />
+      <path className="ln-capture__core" d="M23 18c1 1.4 2.4 2.4 2.4 4.2a2.4 2.4 0 0 1-4.8 0c0-1.8 1.4-2.8 2.4-4.2Z" />
+      <path className="ln-capture__plus" d="M23 31v6.5M19.75 34.25h6.5" />
+    </svg>
   );
 }

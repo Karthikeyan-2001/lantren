@@ -301,7 +301,7 @@ Why each phase gets its model:
 - Heatmap days are circles, all one size. An empty day is a small recessed point; a worked day is a flat lens in a solid 1.5 px brass rim whose glass deepens with the level (ember-tinted dark glass, amber, then lit with a hard-edged pale heart). Flat fills and hard edges only: soft gradients at this size read as blur. Today has an ember ring; future days an empty ring. Every weekday is labelled down the side (M T W T F S S). Earlier tries, dropped: blurred breathing embers, dots growing with the level, rounded-square tiles, plain metal studs, small flames, and gradient-filled lenses.
 
 ### P7 (capture button)
-- The capture button is seated inside the dock as its last control: a 48 px ember button ringed in brass, after Today, Focus and Library (`.ln-nav__places` holds the three and the gliding indicator). A separate floating button read as a stock Material FAB, which the design rules rule out. On Capture and Review the button is left out and the dock spans the three places. Still three destinations.
+- The capture button is seated inside the dock as its last control, after Today, Focus and Library (`.ln-nav__places` holds the three and the gliding indicator). It is a brass lens (`CaptureLens` in `Nav.tsx`, picked by the user from four drawn options): dark glass in a brass rim holding a small lit flame with a plus beneath, all from theme tokens; the flame lifts a little on hover. Dropped before it: a floating arch, a floating ember disc (read as a Material FAB) and a plain ember circle in the dock. On Capture and Review the button is left out and the dock spans the three places. Still three destinations.
 
 ## Environment notes
 
